@@ -1,4 +1,17 @@
 import { test, expect, type Page } from "@playwright/test";
+test('Unit Members can compare role permissions without gaining role administration', async ({ page }) => {
+  await enter(page, 'recruit-member');
+  await page.getByRole('button', { name: 'Roles & access', exact: true }).click();
+  const table = page.getByRole('table', { name: 'Role permissions', exact: true });
+  await expect(table).toBeVisible();
+  await expect(table.getByRole('columnheader')).toHaveCount(7);
+  await expect(table.getByRole('columnheader', { name: 'Membership only', exact: true })).toBeVisible();
+  await expect(page.getByText('This organization has no recorded owner.', { exact: false })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Blocks role management', exact: true })).toHaveCount(0);
+  await page.setViewportSize({ width: 390, height: 844 });
+  await expect(table).toBeVisible();
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+});
 test('Platform Super Admin can edit native role hierarchy through the Blocks panel',async({page})=>{
  await enter(page);
  const roles=[{id:'root-role',slug:'clouduser',name:'System User',description:null,parentRoleSlug:null,canCreateOwn:true,revision:'system',protected:true},{id:'reviewer',slug:'atlas-reviewer',name:'Reviewer',description:'Keep description',parentRoleSlug:null,canCreateOwn:false,revision:'one',protected:false}];
@@ -13,7 +26,7 @@ test('Platform Super Admin can edit native role hierarchy through the Blocks pan
  });
  await page.reload();await page.getByRole('button',{name:/Bangladesh.*Open organization/}).click();
  await page.getByRole('button',{name:'Roles & access',exact:true}).click();
- await expect(page.getByRole('table',{name:'Workspace role management'})).toContainText('Assigned unit only');
+ await expect(page.getByRole('table',{name:'Role permissions',exact:true})).toContainText('Assigned units');
  await expect(page.getByRole('table',{name:'Blocks role hierarchy'})).toContainText('Protected system role');
  await page.getByRole('button',{name:'Edit hierarchy',exact:true}).click();
  const form=page.getByRole('form',{name:'Blocks role editor'});

@@ -20,6 +20,7 @@ import {
 import type { Identity, Organization } from "@/lib/rbac/model";
 import type { Rbac } from "@/lib/rbac/service";
 import NativeRolePanel from './native-role-panel';
+import RolePermissions from './role-permissions';
 type Workspace = ReturnType<Rbac["snapshot"]> & {
   initialized: true;
   revision: string;
@@ -839,7 +840,7 @@ export default function RbacPortal() {
                           ? "Create units and invite Unit Admins or Unit Members from each unit."
                           : "Organization membership alone gives no unit access."
                         : view === "roles"
-                          ? "Four roles: Organization Owner, Organization Admin, Unit Admin, and Unit Member."
+                          ? "Compare role permissions, organization authority and unit access."
                           : "Who changed settings, units, roles and memberships."}
                 </p>
               </div>
@@ -1248,16 +1249,10 @@ export default function RbacPortal() {
             {view === "roles" && (
               <>
                 {actor.superAdmin&&!mock&&<NativeRolePanel key={actor.id}/>}
-                <div className="rbac-panel table-wrap"><h2>Who can manage whom in this workspace</h2>
-                <table aria-label="Workspace role management"><thead><tr><th>Manager</th><th>Can manage</th><th>Boundary</th></tr></thead><tbody>
-                  <tr><td>Organization Owner</td><td>Everything in the company, including Organization Admins and role management</td><td>Own company after signup</td></tr>
-                  <tr><td>Organization Admin</td><td>Create units; invite and manage Unit Admins and Unit Members</td><td>Owner-authorized units, plus units they create</td></tr>
-                  <tr><td>Unit Admin</td><td>Invite and manage Unit Members</td><td>Assigned unit only, within what Organization Admin permits</td></tr>
-                  <tr><td>Unit Member</td><td>No user or role management</td><td>Use only what Organization Admin permits in assigned units</td></tr>
-                </tbody></table></div>
+                <RolePermissions legacyOrganization={!workspace.ownerId} />
                 <div className="rbac-role-grid">
                   {[
-                    {name:"Organization Owner",scope:"Own company",items:["Assigned automatically when you create your company after signup","Create and manage all units and organization members","Appoint Organization Admins and control role management","Full access to every unit in the company"]},
+                    {name:"Organization Owner",scope:"Own company",items:["Assigned automatically when you create your company after signup","Create and manage all units and organization members","Appoint Organization Admins and set their authorized units","Full access to every unit in the company"]},
                     {
                       name: "Organization Admin",
                       scope: "Authorized units",
