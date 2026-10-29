@@ -1,3 +1,4 @@
+import {createCompanyOrganization} from './create-company';
 import { randomUUID } from "node:crypto";
 import {listNativeRoles,saveNativeRole} from './native-roles';
 import { sendInvitationMail } from "./invitation-mail";
@@ -135,57 +136,7 @@ export async function rbacHandler(req: Request): Promise<Response> {
           if(!ctx.actor.superAdmin)await initializeCompany(id,name);
           return json({ id,name,initialized:!ctx.actor.superAdmin,companyOwner:!ctx.actor.superAdmin }, 201);
         }
-        type IamOrg={name?:string;itemId?:string;isDisabled?:boolean;createdBy?:string;createdDate?:string};
-        const before=await backendClient().iam.organizations.list({
-          Page:0,
-          PageSize:100,
-          "Filter.Search":name,
-        });
-        if(before.isSuccess===false||!Array.isArray(before.organizations))
-          throw new AppError(503,"Cannot look up organizations in Blocks.");
-        const beforeIds=new Set(
-          (before.organizations as IamOrg[])
-            .filter(o=>typeof o.name==="string"&&o.name.trim().toLowerCase()===name.toLowerCase()&&o.itemId)
-            .map(o=>o.itemId!),
-        );
-        const created = await backendClient().iam.organizations.create({
-          name,
-          defaultRoleForMembers: [],
-          defaultPermissionsForMembers: [],
-        });
-        if (created.isSuccess !== true)
-          throw new AppError(502, "IAM did not create the organization.");
-        const createdId=
-          typeof (created as {itemId?:string}).itemId==="string"
-            ?(created as {itemId:string}).itemId
-            :typeof (created as {organization?:{itemId?:string}}).organization?.itemId==="string"
-              ?(created as {organization:{itemId:string}}).organization.itemId
-              :undefined;
-        let orgId=createdId;
-        if(!orgId){
-          const after=await backendClient().iam.organizations.list({
-            Page:0,
-            PageSize:100,
-            "Filter.Search":name,
-          });
-          if(after.isSuccess===false||!Array.isArray(after.organizations))
-            throw new AppError(503,"IAM organization created, but lookup failed. Refresh before retrying.");
-          const candidates=(after.organizations as IamOrg[])
-            .filter(o=>
-              typeof o.name==="string"&&
-              o.name.trim().toLowerCase()===name.toLowerCase()&&
-              !!o.itemId&&
-              o.isDisabled!==true&&
-              !beforeIds.has(o.itemId!),
-            )
-            .sort((a,b)=>String(b.createdDate||"").localeCompare(String(a.createdDate||"")));
-          const match=
-            candidates.find(o=>o.createdBy===ctx.actor.id)||
-            candidates[0];
-          orgId=match?.itemId;
-        }
-        if(!orgId)
-          throw new AppError(503,"IAM organization created, but lookup failed. Refresh Blocks before retrying.");
+        const orgId=await createCompanyOrganization(backendClient().iam.organizations,name);
         try {
           await liveRepository().create("countryMetadata", {
             id: orgId,

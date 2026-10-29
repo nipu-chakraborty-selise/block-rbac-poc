@@ -1,14 +1,21 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {randomBytes,randomUUID} from 'node:crypto';
-import {activateInvitationAccount,previewInvitation} from '../src/lib/rbac/activate-invitation';
+import {activateInvitationAccount,previewInvitation,activationFailed} from '../src/lib/rbac/activate-invitation';
 import {sharedMockRepository} from '../src/lib/rbac/repository';
 import {emptyState,type OrganizationState} from '../src/lib/rbac/model';
 import {tokenHash} from '../src/lib/rbac/service';
-import {application} from '../src/lib/http';
+import {application,handle} from '../src/lib/http';
 
 const token=randomBytes(16).toString('base64url');
 const inviteId=randomUUID();
+test('Successful activation with an empty errors array is not rejected',()=>{
+ assert.equal(activationFailed({isSuccess:true,errors:[]}),false);
+ assert.equal(activationFailed({isSuccess:true,errors:null}),false);
+ assert.equal(activationFailed({isSuccess:false,errors:[]}),true);
+ assert.equal(activationFailed({isSuccess:true,errors:['invalid code']}),true);
+ assert.equal(activationFailed({error:'invalid_code'}),true);
+});
 
 async function seedInvite(email='newbie@demo.local'){
   application();
@@ -40,6 +47,14 @@ test('Invitation preview exposes activate-account context for a pending invite',
   assert.equal(preview.roleLabel,'Organization Admin');
   assert.equal(preview.accountStatus,'active');
   assert.equal(preview.organization,'Bangladesh');
+});
+test('Invitation preview uses an origin-checked POST body, never a GET query',async()=>{
+ const invite=await seedInvite('unassigned@demo.local');
+ const body={organizationId:invite.organizationId,inviteId:invite.inviteId,token:invite.token};
+ const request=(method:string,origin='http://localhost')=>new Request('http://localhost/api/auth/invitation-preview',{method,headers:{origin,'Content-Type':'application/json'},...(method==='POST'?{body:JSON.stringify(body)}:{})});
+ assert.equal((await handle(request('GET'))).status,405);
+ assert.equal((await handle(request('POST','https://evil.example'))).status,403);
+ const result=await handle(request('POST'));assert.equal(result.status,200);assert.equal((await result.json()).email,'unassigned@demo.local');
 });
 
 test('Activate invitation page creates a verified mock account for new invitees',async()=>{

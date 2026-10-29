@@ -431,7 +431,7 @@ export default function RbacPortal() {
         accept.searchParams.set("organization", orgId);
         accept.searchParams.set("invite", result.id);
         accept.hash = `token=${encodeURIComponent(result.token)}`;
-        setInviteLink(`${accept.pathname}${accept.search}${accept.hash}`);
+        setInviteLink(accept.href);
         await refresh();
         setNotice(
           result.emailStatus==="queued"
@@ -595,7 +595,7 @@ export default function RbacPortal() {
                 <>
                   <a
                     className="button secondary"
-                    href={`/activate?organization=${encodeURIComponent(pendingInvite.org)}&invite=${encodeURIComponent(pendingInvite.id)}&token=${encodeURIComponent(pendingInvite.token)}`}
+                    href={`/activate?organization=${encodeURIComponent(pendingInvite.org)}&invite=${encodeURIComponent(pendingInvite.id)}#token=${encodeURIComponent(pendingInvite.token)}`}
                   >
                     Activate your account
                   </a>

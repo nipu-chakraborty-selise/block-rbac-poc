@@ -1,3 +1,4 @@
+import {organizationDirectory} from './directory';
 import { createHash } from "node:crypto";
 import { application } from "../http";
 import { mode } from "../adapters";
@@ -203,44 +204,7 @@ export async function rbacContext(req: Request): Promise<Context> {
     }),
   );
   async function directory(id: string) {
-    const people: Identity[] = [];
-    let page = 0,
-      total = 0,
-      count = 0;
-    do {
-      const result = await iam.users.list({
-        page,
-        pageSize: 100,
-        filter: { organizationId: id },
-      });
-      if (
-        result.isSuccess === false ||
-        !Array.isArray(result.data) ||
-        !Number.isInteger(result.totalCount)
-      )
-        throw new AppError(503, "IAM user directory unavailable.");
-      total = result.totalCount!;
-      count += result.data.length;
-      if (total > 10000 || (!result.data.length && count < total))
-        throw new AppError(503, "IAM user directory is incomplete.");
-      for (const u of result.data) {
-        if (!u.itemId) throw new AppError(503, "IAM identity missing.");
-        people.push({
-          id: u.itemId,
-          name:
-            [u.firstName, u.lastName].filter(Boolean).join(" ") ||
-            u.email ||
-            u.itemId,
-          email: u.email || "",
-          active: u.active === true,
-          verified: u.isVerified === true,
-          organizationIds: [id],
-          superAdmin: admins.some((a) => a.userId === u.itemId),
-        });
-      }
-      page++;
-    } while (count < total);
-    return people;
+    return organizationDirectory(iam.users,id,admins);
   }
   return {
     actor: identity(user, superAdmin),

@@ -13,11 +13,11 @@ test('Copied invitation links keep the token in the URL fragment',()=>{
  assert.doesNotMatch(href,/[?&]token=/);
 });
 
-test('Mail invitation links use the continue page so clients that strip fragments still work',async()=>{
+test('Mail invitation links keep secrets in fragments and out of request query strings',async()=>{
  const href=invitationMailLink('https://app.example','org-1','invite-1','token-1');
  assert.match(href,/\/invite\/continue\?/);
- assert.match(href,/[?&]token=token-1(?:&|$)/);
- assert.doesNotMatch(href,/#/);
+ assert.match(href,/#token=token-1$/);
+ assert.doesNotMatch(href,/[?&]token=/);
 
  let sent:Record<string,unknown>|undefined;
  const status=await sendInvitationMail(

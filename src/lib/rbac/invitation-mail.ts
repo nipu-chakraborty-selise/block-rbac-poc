@@ -20,14 +20,13 @@ export function invitationLink(origin:string,organizationId:string,id:string,tok
 }
 
 /**
- * Email clients often strip fragments. Mail uses a continue page that moves the
- * token into the fragment client-side before activation.
+ * Keep email invitation secrets out of server request URLs, just like copied links.
  */
 export function invitationMailLink(origin:string,organizationId:string,id:string,token:string){
   const link=new URL('/invite/continue',origin);
   link.searchParams.set('organization',organizationId);
   link.searchParams.set('invite',id);
-  link.searchParams.set('token',token);
+  link.hash=`token=${encodeURIComponent(token)}`;
   return link.href;
 }
 
@@ -64,11 +63,8 @@ export async function sendInvitationMail(
     if(response.isSuccess===false||response.error||(Array.isArray(response.errors)&&response.errors.length))
       throw new Error('Blocks Mail rejected the invitation email.');
     return 'queued' as const;
-  }catch(error){
-    console.error(
-      'Invitation email was not queued.',
-      error instanceof Error?error.message:'unknown mail error',
-    );
+  }catch{
+    console.error('Invitation email was not queued; sensitive provider response suppressed.');
     return 'failed' as const;
   }
 }

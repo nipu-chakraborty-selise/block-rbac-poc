@@ -32,7 +32,13 @@ test("Super Admin invites an Organization Admin and acceptance opens the organiz
  const link=await page.getByRole("textbox",{name:"Invitation link",exact:true}).inputValue();
  await expect(page.getByRole("heading",{name:"Organization invitations",exact:true})).toBeVisible();
  await page.getByRole("combobox",{name:"Demo identity",exact:true}).selectOption("unassigned");
- await page.goto(link);
+ const emailLink=new URL(link);emailLink.pathname='/invite/continue';
+ const secret=new URLSearchParams(emailLink.hash.slice(1)).get('token')!;
+ const requestUrls:string[]=[];page.on('request',request=>requestUrls.push(request.url()));
+ const previewPromise=page.waitForRequest(request=>request.url().includes('/api/auth/invitation-preview'));
+ await page.goto(emailLink.href);
+ const previewRequest=await previewPromise;
+ expect(previewRequest.method()).toBe('POST');expect(previewRequest.postDataJSON().token).toBe(secret);
  await expect(page.getByRole("heading",{name:"Activate your account",exact:true})).toBeVisible();
  await page.getByRole("link",{name:"Continue to accept invitation"}).click();
  await page.getByRole("button",{name:"Accept invitation",exact:true}).click();
@@ -41,6 +47,7 @@ test("Super Admin invites an Organization Admin and acceptance opens the organiz
  const current=await (await page.request.get("/api/rbac/organizations/bd")).json();
  const restored=await page.request.post("/api/rbac/organizations/bd/members",{headers:{origin:"http://127.0.0.1:3100"},data:{userId:"unassigned",role:"member",revision:current.revision}});
  expect(restored.status()).toBe(200);
+ expect(requestUrls.every(url=>!url.includes(secret))).toBe(true);
 });
 test("Unit Admin invites only a Unit Member to their permitted unit",async({page})=>{
  await enter(page,"recruit-admin");await openUnit(page,"HRM");
@@ -256,6 +263,7 @@ test("unit invitation acceptance checks the recipient and grants independent acc
     .getByRole("combobox", { name: "Demo identity", exact: true })
     .selectOption("germany-admin");
   await page.goto(link);
+  await page.getByRole('link',{name:'Continue to accept invitation',exact:true}).click();
   await page
     .getByRole("button", { name: "Accept invitation", exact: true })
     .click();
@@ -339,7 +347,7 @@ test('Organization Owner invites an Organization Admin who can manage all units'
  await page.getByRole('button',{name:'Create invitation',exact:true}).click();
  const link=await page.getByRole('textbox',{name:'Invitation link',exact:true}).inputValue();
  await page.getByRole('combobox',{name:'Demo identity',exact:true}).selectOption('germany-admin');
- await page.goto(link);await page.getByRole('button',{name:'Accept invitation',exact:true}).click();
+ await page.goto(link);await page.getByRole('link',{name:'Continue to accept invitation',exact:true}).click();await page.getByRole('button',{name:'Accept invitation',exact:true}).click();
  await expect(page.getByRole('heading',{name:'Team Alpha',exact:true})).toBeVisible();
  await expect(page.getByRole('heading',{name:'Team Beta',exact:true})).toBeVisible();
  await expect(page.getByRole('button',{name:'Settings',exact:true})).toHaveCount(0);

@@ -99,11 +99,12 @@ export function createHandler(getApp = application) {
         await userClient(identity.session.access).auth.logout({refreshToken:identity.session.refresh});
         return await json({success:true},200,{'Set-Cookie':'atlas_live=; HttpOnly; Secure; SameSite=Lax; Path=/; Max-Age=0'});
       }
-      if(parts[0]==='auth'&&parts[1]==='invitation-preview'&&method==='GET'){
+      if(parts[0]==='auth'&&parts[1]==='invitation-preview'&&method==='GET')throw new AppError(405,'Invitation preview requires POST. Open your invitation link again.');
+      if(parts[0]==='auth'&&parts[1]==='invitation-preview'&&method==='POST'){
         return await json(await previewInvitation({
-          organizationId:String(url.searchParams.get('organization')||''),
-          inviteId:String(url.searchParams.get('invite')||''),
-          token:String(url.searchParams.get('token')||''),
+          organizationId:String(b.organizationId||''),
+          inviteId:String(b.inviteId||''),
+          token:String(b.token||''),
         }));
       }
       if(parts[0]==='auth'&&parts[1]==='activate-invitation'&&method==='POST'){

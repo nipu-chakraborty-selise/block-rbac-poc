@@ -1,0 +1,26 @@
+{
+  "checkedOn": "2026-10-29",
+  "fixed": [
+    "Organization directory uses organizationIds and filters authoritative membership keys",
+    "Organization creation requires a unique per-request description reference, including when an ID is returned",
+    "New invitation URLs keep tokens in fragments; preview uses origin-checked POST",
+    "Activation accepts successful responses with empty errors arrays",
+    "Generated Next output excluded from lint; continuation page lint error resolved",
+    "Copied invitation links are absolute URLs"
+  ],
+  "backendTestsPassed": 94,
+  "browserWorkflowsPassed": 13,
+  "typecheckPassed": true,
+  "lintErrors": 0,
+  "lintWarnings": 0,
+  "productionBuildPassed": true,
+  "liveReadOnlyVerification": {
+    "organization": "Bangladesh",
+    "membersReturned": 8,
+    "unrelatedAccountExcluded": true,
+    "organizationDescriptionFieldAvailable": true
+  },
+  "liveRecordsChanged": false,
+  "companyCreationRaceTestedWithMockIam": true,
+  "legacyInvitationNote": "Already-sent query-token email links remain compatible; new links no longer generate query tokens. Historical logs and existing invitation tokens were not erased or rotated."
+}

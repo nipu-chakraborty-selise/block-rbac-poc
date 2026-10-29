@@ -1,23 +1,15 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 
-/**
- * Mail clients strip URL fragments. Email links land here with the token in the
- * query string; we immediately move it into the fragment and drop the query token.
- */
+/** Continue fragment-based mail links; also lets already-sent legacy links finish. */
 export default function InviteContinuePage() {
-  const [error, setError] = useState("");
-
   useEffect(() => {
     const url = new URL(window.location.href);
     const org = url.searchParams.get("organization");
     const id = url.searchParams.get("invite");
-    const token = url.searchParams.get("token");
-    if (!org || !id || !token) {
-      setError("Open the invitation link from your email to continue.");
-      return;
-    }
+    const token = new URLSearchParams(url.hash.slice(1)).get("token") || url.searchParams.get("token");
+    if (!org || !id || !token) return;
     const next = new URL("/activate", window.location.origin);
     next.searchParams.set("organization", org);
     next.searchParams.set("invite", id);
@@ -27,12 +19,9 @@ export default function InviteContinuePage() {
 
   return (
     <main className="rbac-empty">
-      <h1>{error || "Opening your invitation…"}</h1>
-      {error ? (
-        <p>Ask your administrator for a new organization or unit invitation link.</p>
-      ) : (
-        <p>Moving you to account activation. Keep this tab open.</p>
-      )}
+      <h1>Continue to account activation</h1>
+      <p>Opening your invitation…</p>
+      <p>If you are not redirected, open the complete invitation link from your email, or ask your administrator for a new link.</p>
     </main>
   );
 }

@@ -77,8 +77,8 @@ export default function ActivateAccountPage() {
         }
         if (!cancelled) setInvite(current);
         const response = await fetch(
-          `/api/auth/invitation-preview?organization=${encodeURIComponent(current.org)}&invite=${encodeURIComponent(current.id)}&token=${encodeURIComponent(current.token)}`,
-          { cache: "no-store" },
+          '/api/auth/invitation-preview',
+          { method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({organizationId:current.org,inviteId:current.id,token:current.token}),cache: "no-store" },
         );
         const data = await response.json();
         if (!response.ok) throw new Error(data.error || "Invitation is unavailable.");
@@ -160,7 +160,7 @@ export default function ActivateAccountPage() {
         ) : done && preview ? (
           <div className="rbac-activate-next">
             {mock ? (
-              <a className="button primary" href={`/?organization=${encodeURIComponent(invite!.org)}&invite=${encodeURIComponent(invite!.id)}&token=${encodeURIComponent(invite!.token)}`}>
+              <a className="button primary" href={`/?organization=${encodeURIComponent(invite!.org)}&invite=${encodeURIComponent(invite!.id)}#token=${encodeURIComponent(invite!.token)}`}>
                 Continue to accept invitation <ArrowUpRight size={17} />
               </a>
             ) : (
@@ -176,7 +176,7 @@ export default function ActivateAccountPage() {
         ) : preview?.accountStatus === "active" ? (
           <div className="rbac-activate-next">
             {mock ? (
-              <a className="button primary" href={`/?organization=${encodeURIComponent(invite!.org)}&invite=${encodeURIComponent(invite!.id)}&token=${encodeURIComponent(invite!.token)}`}>
+              <a className="button primary" href={`/?organization=${encodeURIComponent(invite!.org)}&invite=${encodeURIComponent(invite!.id)}#token=${encodeURIComponent(invite!.token)}`}>
                 Continue to accept invitation <ArrowUpRight size={17} />
               </a>
             ) : (

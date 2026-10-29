@@ -19,6 +19,10 @@ export type InvitationPreview = {
   expiresAt: string;
   accountStatus: "missing" | "active" | "inactive";
 };
+export function activationFailed(response:Record<string,unknown>){
+  const errors=response.errors;
+  return response.isSuccess===false || !!response.error || (Array.isArray(errors)?errors.length>0:!!errors);
+}
 
 async function loadState(organizationId: string) {
   if (mode() === "mock") {
@@ -146,7 +150,7 @@ export async function activateInvitationAccount(input: {
       firstName,
       lastName,
     });
-    if (activated.isSuccess === false || activated.errors)
+    if (activationFailed(activated))
       throw new AppError(422, "Activation code is invalid or expired.");
     return { status: "activated" as const, next: "signin" as const, email: invite.email };
   }
