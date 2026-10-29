@@ -7,5 +7,11 @@
   "data": {
     "schemas": "blocks/data/schemas",
     "rules": "blocks/data/rules.json"
+  },
+  "repo": {
+    "branch": "dev",
+    "fullName": "nipu-chakraborty-selise/block-rbac-poc",
+    "provider": "github",
+    "url": "https://github.com/nipu-chakraborty-selise/block-rbac-poc"
   }
 }
