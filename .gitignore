@@ -56,3 +56,5 @@ dist/
 .env
 .env.*.local
 .cert/
+
+blocks/release/
