@@ -33,7 +33,7 @@ export async function rbacHandler(req: Request): Promise<Response> {
     if (method !== "GET") {
       const expected =
         mode() === "live"
-          ? process.env.APP_ORIGIN
+          ? process.env["APP_ORIGIN"]
           : `${url.protocol}//${req.headers.get("host") || url.host}`;
       if (req.headers.get("origin") !== expected)
         throw new AppError(403, "Same-origin request required.");

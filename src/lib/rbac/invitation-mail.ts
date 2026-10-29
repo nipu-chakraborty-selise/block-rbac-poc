@@ -29,7 +29,7 @@ export async function sendInvitationMail(
   const currentMode=(dependencies?.mode||mode)();
   if(currentMode==='mock')return 'mock' as const;
   try {
-    const origin=(dependencies?.origin||(()=>process.env.APP_ORIGIN))();
+    const origin=(dependencies?.origin||(()=>process.env["APP_ORIGIN"]))();
     if(!origin)throw new Error('APP_ORIGIN is required to email invitation links.');
     const href=invitationLink(origin,input.organizationId,input.id,input.token);
     const unitLabel=input.scope==='organization'||input.unit==='Organization workspace'

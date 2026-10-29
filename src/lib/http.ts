@@ -65,7 +65,7 @@ export function createHandler(getApp = application) {
       if (method !== "GET") {
         if (
           req.headers.get("origin") !==
-          ((mode() === "live" ? process.env.APP_ORIGIN : undefined) ||
+          ((mode() === "live" ? process.env["APP_ORIGIN"] : undefined) ||
             `${url.protocol}//${req.headers.get("host") || url.host}`)
         )
           throw new AppError(403, "Same-origin request required.");
