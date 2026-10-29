@@ -388,7 +388,14 @@ export async function rbacHandler(req: Request): Promise<Response> {
         throw new AppError(422, "Choose an IAM member of this organization.");
       return user;
     };
-    if (path[2] === "settings" && method === "PATCH") service.settings(body);
+    if (!path[2] && method === "DELETE") {
+      service.dissolveOrganization();
+      await ctx.repository.remove(org.id, saved);
+      return json({ removed: true });
+    } else if (path[2] === "ownership" && method === "POST") {
+      service.transferOwnership(String(body.userId || ""));
+    } else if (path[2] === "settings" && method === "PATCH")
+      service.settings(body);
     else if (path[2] === "units" && !path[3] && method === "POST")
       result = service.saveUnit(undefined, body);
     else if (path[2] === "units" && path[3] && !path[4] && method === "PATCH")

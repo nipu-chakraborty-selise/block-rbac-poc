@@ -289,6 +289,7 @@ export async function rbacContext(req: Request): Promise<Context> {
       load: async (id) => liveStateRepository().load(id),
       commit: async (state, expected) =>
         liveStateRepository().commit(state, expected),
+      remove: async (id, expected) => liveStateRepository().remove(id, expected),
     },
     directory,
     async legacy(id) {

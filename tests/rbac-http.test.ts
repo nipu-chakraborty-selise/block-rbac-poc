@@ -93,7 +93,7 @@ test("Verified signup can create and own a company without gaining platform or o
  const updated=await (await call(`organizations/${company.id}`,"GET",undefined,cookie)).json();
  assert.equal((await call(`organizations/${company.id}/members`,"POST",{userId:"company-founder",role:"member",revision:updated.revision},cookie)).status,409);
 });
-test('Organization Admin manages all units and unit roles but cannot manage the company',async()=>{
+test('Organization Admin manages owner-authorized units and units they create but cannot manage the company',async()=>{
  const founder=await login('company-founder');
  const organizations=await (await call('organizations','GET',undefined,founder)).json();
  const id=organizations.organizations.find((o:{name:string})=>o.name==='Founder company').id;
@@ -104,7 +104,7 @@ test('Organization Admin manages all units and unit roles but cannot manage the 
  const other=await call(`organizations/${id}/units`,'POST',{name:'Team B',revision:state.revision},founder);assert.equal(other.status,200);const secondUnit=await other.json();
  application().store.put('users',{id:'company-org-admin',name:'Org admin',email:'org-admin@demo.local',verified:true,projectId:PROJECT_ID,countryIds:[id]});
  state=await snapshot(founder);
- assert.equal((await call(`organizations/${id}/members`,'POST',{userId:'company-org-admin',role:'organization-admin',revision:state.revision},founder)).status,200);
+ assert.equal((await call(`organizations/${id}/members`,'POST',{userId:'company-org-admin',role:'organization-admin',managedUnitIds:[unit.id,secondUnit.id],revision:state.revision},founder)).status,200);
  const admin=await login('company-org-admin');state=await snapshot(admin);
  assert.equal(state.units.length,2);
  assert.equal((await call(`organizations/${id}/access?unitId=${secondUnit.id}`,'GET',undefined,admin)).status,200);

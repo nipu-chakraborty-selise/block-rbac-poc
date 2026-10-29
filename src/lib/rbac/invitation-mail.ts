@@ -10,11 +10,23 @@ export function invitationRoleLabel(role:string){
     :'Unit Member';
 }
 
+/** In-app / copied links keep the secret in the URL fragment (not query). */
 export function invitationLink(origin:string,organizationId:string,id:string,token:string){
   const link=new URL('/activate',origin);
   link.searchParams.set('organization',organizationId);
   link.searchParams.set('invite',id);
-  // Keep the token in the query string: many mail clients strip URL fragments (#...).
+  link.hash=`token=${encodeURIComponent(token)}`;
+  return link.href;
+}
+
+/**
+ * Email clients often strip fragments. Mail uses a continue page that moves the
+ * token into the fragment client-side before activation.
+ */
+export function invitationMailLink(origin:string,organizationId:string,id:string,token:string){
+  const link=new URL('/invite/continue',origin);
+  link.searchParams.set('organization',organizationId);
+  link.searchParams.set('invite',id);
   link.searchParams.set('token',token);
   return link.href;
 }
@@ -31,7 +43,7 @@ export async function sendInvitationMail(
   try {
     const origin=(dependencies?.origin||(()=>process.env["APP_ORIGIN"]))();
     if(!origin)throw new Error('APP_ORIGIN is required to email invitation links.');
-    const href=invitationLink(origin,input.organizationId,input.id,input.token);
+    const href=invitationMailLink(origin,input.organizationId,input.id,input.token);
     const unitLabel=input.scope==='organization'||input.unit==='Organization workspace'
       ?'Organization'
       :input.unit;

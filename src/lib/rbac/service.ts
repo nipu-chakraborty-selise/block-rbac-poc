@@ -51,8 +51,49 @@ export class Rbac {
   }
   canManageUnit(id:string) {
     if (!this.state.units.some((u) => u.id === id)) return false;
-    // Owner and Organization Admin manage every unit; Unit Admin is assignment-based.
-    return this.canManageOrganization() || this.organizationAdmin();
+    if (this.canManageOrganization()) return true;
+    if (!this.organizationAdmin()) return false;
+    // Owner-managed orgs: Organization Admins only manage authorized units (or units they create).
+    if (this.state.ownerId) {
+      const managed = this.orgMember()?.managedUnitIds;
+      return Array.isArray(managed) && managed.includes(id);
+    }
+    // Legacy orgs without ownerId retain full Organization Admin unit authority.
+    return true;
+  }
+  private parseManagedUnitIds(raw: unknown, role: string) {
+    if (role !== "organization-admin") return undefined;
+    if (raw === undefined || raw === null) return [] as string[];
+    const list = Array.isArray(raw)
+      ? raw
+      : typeof raw === "string"
+        ? raw.split(",").map((s) => s.trim()).filter(Boolean)
+        : null;
+    if (!list)
+      throw new AppError(422, "Choose zero or more units for this Organization Admin.");
+    const ids = [
+      ...new Set(
+        list.map((id) => {
+          if (typeof id !== "string" || !id)
+            throw new AppError(422, "Each authorized unit id must be a string.");
+          return id;
+        }),
+      ),
+    ];
+    for (const id of ids)
+      if (!this.state.units.some((u) => u.id === id))
+        throw new AppError(
+          422,
+          "Choose authorized units that exist in this organization.",
+        );
+    return ids;
+  }
+  private sameManagedUnits(a?: string[], b?: string[]) {
+    const left = [...(a || [])].sort();
+    const right = [...(b || [])].sort();
+    return (
+      left.length === right.length && left.every((id, index) => id === right[index])
+    );
   }
   requireUnitManager(id:string) {
     this.unit(id,true);
@@ -223,6 +264,17 @@ export class Rbac {
         );
       id = randomUUID();
       this.state.units.push({ id, name, status: "active" });
+      // Units created by a scoped Organization Admin are automatically authorized for them.
+      const member = this.orgMember();
+      if (
+        member?.role === "organization-admin" &&
+        !this.canManageOrganization() &&
+        this.state.ownerId
+      ) {
+        member.managedUnitIds = [
+          ...new Set([...(member.managedUnitIds || []), id]),
+        ];
+      }
     }
     this.event("unit.saved", id);
     return { id };
@@ -235,28 +287,89 @@ export class Rbac {
   addOrganizationMember(
     target: Identity,
     role: "organization-admin" | "member" = "member",
-    _managedUnitIds?:unknown,
+    managedUnitIds?: unknown,
   ) {
     this.requireOrganizationManager();
     this.validateTarget(target);
     if(target.id===this.state.ownerId && role!=="organization-admin")throw new AppError(409,"The company owner must remain an Organization Admin.");
+    const scoped = this.parseManagedUnitIds(managedUnitIds, role);
     const old = this.state.members.find((m) => m.userId === target.id);
-    // Organization Admins manage all units; unit lists are no longer owner-scoped.
-    if (old?.status === "active" && old.role === role) return;
+    if (
+      old?.status === "active" &&
+      old.role === role &&
+      this.sameManagedUnits(old.managedUnitIds, scoped)
+    )
+      return;
     this.protectLastAdmin(target.id, role, "active");
     if (old) {
       old.role = role;
       old.status = "active";
-      old.managedUnitIds = role === "organization-admin" ? undefined : [];
+      old.managedUnitIds = scoped;
     } else {
       if (this.state.members.length >= 1000)
         throw new AppError(
           409,
           "This RBAC release supports 1,000 members per organization.",
         );
-      this.state.members.push({ userId: target.id, role, status: "active" });
+      this.state.members.push({
+        userId: target.id,
+        role,
+        status: "active",
+        managedUnitIds: scoped,
+      });
     }
     this.event("organization.member-added", target.id);
+  }
+  transferOwnership(userId: string) {
+    if (!this.actor.superAdmin && !this.companyOwner())
+      throw new AppError(
+        403,
+        "Only the company owner or platform Super Admin can transfer ownership.",
+      );
+    this.country();
+    if (typeof userId !== "string" || !userId)
+      throw new AppError(422, "Choose the next Organization Owner.");
+    if (userId === this.state.ownerId) return;
+    const next = this.state.members.find(
+      (m) =>
+        m.userId === userId &&
+        m.status === "active" &&
+        m.role === "organization-admin",
+    );
+    if (!next)
+      throw new AppError(
+        422,
+        "Ownership can only transfer to an active Organization Admin.",
+      );
+    const previousId = this.state.ownerId;
+    const previous = previousId
+      ? this.state.members.find((m) => m.userId === previousId)
+      : undefined;
+    if (previous && previous.userId !== userId) {
+      previous.role = "organization-admin";
+      previous.status = "active";
+      previous.managedUnitIds = this.state.units.map((u) => u.id);
+    }
+    next.role = "organization-admin";
+    next.status = "active";
+    next.managedUnitIds = undefined;
+    this.state.ownerId = userId;
+    this.event("organization.ownership-transferred", userId);
+  }
+  dissolveOrganization() {
+    if (!this.actor.superAdmin && !this.companyOwner())
+      throw new AppError(
+        403,
+        "Only the company owner or platform Super Admin can remove this organization workspace.",
+      );
+    this.country();
+    for (const invite of this.state.invitations)
+      if (invite.status === "pending") invite.status = "revoked";
+    for (const member of this.state.members)
+      if (member.status === "active") member.status = "removed";
+    for (const assignment of this.state.assignments)
+      if (assignment.status === "active") assignment.status = "removed";
+    this.event("organization.removed", this.state.organizationId);
   }
   validateTarget(target: Identity) {
     if (
@@ -395,16 +508,20 @@ export class Rbac {
       throw new AppError(403, "Only Organization Admin can invite admins.");
     return this.createInvitation(target,unitId,role,"unit");
   }
-  inviteOrganization(target: Identity | {email:string},role:unknown,_managedUnitIds?:unknown) {
+  inviteOrganization(target: Identity | {email:string},role:unknown,managedUnitIds?:unknown) {
     if(!this.canInviteOrganization())throw new AppError(403,"Only Super Admin or this company owner can invite organization members.");
     if(role!=="organization-admin"&&role!=="member")throw new AppError(422,"Choose Organization Admin or organization membership only.");
-    return this.createInvitation(target,"",role,"organization");
+    return this.createInvitation(target,"",role,"organization",managedUnitIds);
   }
-  private createInvitation(target:Identity|{email:string},unitId:string,role:"unit-admin"|"unit-user"|"organization-admin"|"member",scope:"unit"|"organization") {
+  private createInvitation(target:Identity|{email:string},unitId:string,role:"unit-admin"|"unit-user"|"organization-admin"|"member",scope:"unit"|"organization",managedUnitIds?:unknown) {
     if("id" in target&&(!target.active||!target.verified))throw new AppError(422,"Choose an active, verified Blocks account.");
     const recipientId="id" in target?target.id:"";
     const address=text(target.email,"Email",254).toLowerCase();
     if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(address))throw new AppError(422,"Enter a valid email.");
+    const scoped =
+      scope === "organization"
+        ? this.parseManagedUnitIds(managedUnitIds, role)
+        : undefined;
     const token = randomBytes(32).toString("base64url"),
       id = randomUUID();
     for (const previous of this.state.invitations) {
@@ -424,6 +541,7 @@ export class Rbac {
       unitId,
       role,
       scope,
+      managedUnitIds: scoped,
       tokenHash: tokenHash(token),
       invitedBy: this.actor.id,
       expiresAt: new Date(Date.now() + 7 * 86400000).toISOString(),

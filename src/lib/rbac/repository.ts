@@ -17,6 +17,7 @@ export interface StateRepository {
     state: OrganizationState,
     expected: SavedState | undefined,
   ): Promise<void>;
+  remove(organizationId: string, expected: SavedState): Promise<void>;
 }
 export function validateState(
   value: unknown,
@@ -91,6 +92,12 @@ export class MockStateRepository implements StateRepository {
       revision: String(Number(current?.revision || 0) + 1),
     });
   }
+  async remove(organizationId: string, expected: SavedState) {
+    const current = this.rows.get(organizationId);
+    if (!current || current.revision !== expected.revision)
+      throw new AppError(409, "Organization changed. Refresh before retrying.");
+    this.rows.delete(organizationId);
+  }
 }
 /** Shared mock org-state store so invitation preview/activate see the same invites as the portal. */
 export const sharedMockRepository = new MockStateRepository();
@@ -111,7 +118,7 @@ export function liveStateRepository(): StateRepository {
       },
       { rbacState: spec as GatewayCollectionContract },
     );
-  return {
+  const api: StateRepository = {
     async load(organizationId) {
       const result = await repository.list("rbacState", {
         page: 1,
@@ -155,7 +162,14 @@ export function liveStateRepository(): StateRepository {
         );
       else await repository.create("rbacState", record);
     },
+    async remove(organizationId, expected) {
+      const current = await api.load(organizationId);
+      if (!current || current.revision !== expected.revision)
+        throw new AppError(409, "Organization changed. Refresh before retrying.");
+      await repository.remove("rbacState", expected.itemId);
+    },
   };
+  return api;
 }
 export function legacyImport(
   org: Organization,

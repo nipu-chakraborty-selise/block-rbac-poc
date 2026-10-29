@@ -230,36 +230,57 @@ test("Company owners administer and invite only within their own organization",(
  const unrelated=emptyState({id:"de",name:"Other company",status:"active"});
  denied(()=>new Rbac(unrelated,admin).inviteOrganization(user,"member"));
 });
-test("Organization Admin manages all units and unit roles but cannot run the company",()=>{
+test("Organization Admin manages only owner-authorized units and units they create",()=>{
  const {state,admin:owner,user:admin,unitAdmin,user}=setup();state.ownerId=owner.id;
  const ownerService=new Rbac(state,owner);
- ownerService.addOrganizationMember(admin,"organization-admin");
+ ownerService.addOrganizationMember(admin,"organization-admin",["hr"]);
  const service=new Rbac(state,admin);
  assert.equal(service.snapshot().effectiveRole,"organization-admin");
  assert.equal(ownerService.snapshot().effectiveRole,"organization-owner");
  assert.equal(ownerService.snapshot().units.find(u=>u.id==="hr")?.role,"organization-owner");
  assert.equal(service.snapshot().canManageOrganization,false);
- assert.deepEqual(service.snapshot().units.map(u=>u.id).sort(),["hr","legal"]);
+ assert.deepEqual(service.snapshot().units.map(u=>u.id),["hr"]);
  service.saveUnit("hr",{name:"People"});
- service.saveUnit("legal",{name:"Counsel"});
- service.assign(user,"legal","unit-admin");
- service.invite({email:"member@demo.local"},"legal","unit-user");
+ denied(()=>service.saveUnit("legal",{name:"Counsel"}));
+ denied(()=>service.assign(user,"legal","unit-admin"));
+ service.assign(user,"hr","unit-user");
  denied(()=>service.settings({name:"Hijack",layerLabel:"Teams"}));
  denied(()=>service.addOrganizationMember(unitAdmin,"organization-admin"));
  denied(()=>service.removeOrganizationMember(unitAdmin.id));
  denied(()=>service.inviteOrganization(unitAdmin,"organization-admin"));
  const created=service.saveUnit(undefined,{name:"Admin-created unit"});
  assert.equal(service.canManageUnit(created.id),true);
+ assert.ok(state.members.find(m=>m.userId===admin.id)?.managedUnitIds?.includes(created.id));
 });
-test("Organization-admin invitations grant company-wide unit management after verified signup",()=>{
+test("Organization-admin invitations grant only authorized units after verified signup",()=>{
  const {state,admin:owner}=setup();state.ownerId=owner.id;
  const service=new Rbac(state,owner),recipient={...person("invited-admin"),organizationIds:[]};
- const invitation=service.inviteOrganization({email:recipient.email},"organization-admin");
+ const invitation=service.inviteOrganization({email:recipient.email},"organization-admin",["hr"]);
  new Rbac(state,recipient).accept(invitation.id,invitation.token,owner);
  const joined=new Rbac(state,{...recipient,organizationIds:["bd"]});
- assert.deepEqual(joined.snapshot().units.map(u=>u.id).sort(),["hr","legal"]);
+ assert.deepEqual(joined.snapshot().units.map(u=>u.id),["hr"]);
  assert.equal(joined.canManageUnit("hr"),true);
+ assert.equal(joined.canManageUnit("legal"),false);
  assert.equal(joined.snapshot().canManageOrganization,false);
+});
+test("Ownership transfer and organization removal meet owner lifecycle requirements",async()=>{
+ const {state,admin:owner,user:admin}=setup();state.ownerId=owner.id;
+ const repo=new MockStateRepository();
+ new Rbac(state,owner).addOrganizationMember(admin,"organization-admin",["hr"]);
+ await repo.commit(state,undefined);
+ const saved=(await repo.load("bd"))!;
+ const service=new Rbac(saved.state,owner);
+ service.transferOwnership(admin.id);
+ assert.equal(saved.state.ownerId,admin.id);
+ assert.deepEqual(
+  saved.state.members.find(m=>m.userId===owner.id)?.managedUnitIds?.sort(),
+  ["hr","legal"],
+ );
+ await repo.commit(saved.state,saved);
+ const next=(await repo.load("bd"))!;
+ new Rbac(next.state,admin).dissolveOrganization();
+ await repo.remove("bd",next);
+ assert.equal(await repo.load("bd"),undefined);
 });
 test("Invitation scope forbids role tampering and organization revocation by Unit Admin",()=>{
  const {state,root,unitAdmin,user,admin}=setup();

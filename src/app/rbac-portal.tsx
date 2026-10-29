@@ -97,6 +97,7 @@ export default function RbacPortal() {
     [query, setQuery] = useState(""),
     [accountMode, setAccountMode] = useState("existing"),
     [appointedRole, setAppointedRole] = useState("member"),
+    [managedUnitIds, setManagedUnitIds] = useState<string[]>([]),
     [inviteLink, setInviteLink] = useState(""),
     [pendingInvite, setPendingInvite] = useState<{
       org: string;
@@ -316,6 +317,16 @@ export default function RbacPortal() {
             ? "member"
             : "unit-user"),
     );
+    const existing =
+      d.userId && workspace
+        ? workspace.members.find((m) => m.userId === d.userId)
+        : undefined;
+    setManagedUnitIds(
+      existing?.managedUnitIds
+        ? [...existing.managedUnitIds]
+        : workspace?.units.filter((u) => u.status === "active").map((u) => u.id) ||
+            [],
+    );
     setDialog(d);
     if (d.kind === "initialize") {
       setImportPreview([]);
@@ -375,15 +386,21 @@ export default function RbacPortal() {
         await refresh();
         setNotice("Unit saved. Memberships keep the same unit ID.");
       } else if (dialog.kind === "member") {
+        const role = String(values.role || appointedRole);
         await api(`${base}/members`, "POST", {
           ...values,
           userId: dialog.userId || values.userId,
+          role,
           accountMode,
+          managedUnitIds:
+            role === "organization-admin" ? managedUnitIds : undefined,
           revision,
         });
         await refresh();
         setNotice(
-          "Organization membership saved. Unit access is assigned separately.",
+          role === "organization-admin"
+            ? "Organization Admin saved with their authorized units."
+            : "Organization membership saved. Unit access is assigned separately.",
         );
       } else if (dialog.kind === "assignment") {
         await api(
@@ -394,6 +411,7 @@ export default function RbacPortal() {
         await refresh();
         setNotice("Unit role saved.");
       } else if (dialog.kind === "invite") {
+        const role = String(values.role || appointedRole);
         const result = await api<{ id: string; token: string; emailStatus: "queued"|"failed"|"mock" }>(
           `${base}/invitations`,
           "POST",
@@ -401,13 +419,19 @@ export default function RbacPortal() {
             email: values.email,
             scope: dialog.unitId ? "unit" : "organization",
             unitId: dialog.unitId,
-            role: values.role,
+            role,
+            managedUnitIds:
+              !dialog.unitId && role === "organization-admin"
+                ? managedUnitIds
+                : undefined,
             revision,
           },
         );
-        setInviteLink(
-          `${window.location.origin}/activate?organization=${encodeURIComponent(orgId)}&invite=${result.id}&token=${encodeURIComponent(result.token)}`,
-        );
+        const accept = new URL("/activate", window.location.origin);
+        accept.searchParams.set("organization", orgId);
+        accept.searchParams.set("invite", result.id);
+        accept.hash = `token=${encodeURIComponent(result.token)}`;
+        setInviteLink(`${accept.pathname}${accept.search}${accept.hash}`);
         await refresh();
         setNotice(
           result.emailStatus==="queued"
@@ -417,14 +441,25 @@ export default function RbacPortal() {
               :"Invitation created, but the email could not be queued. Share the link below with the recipient, or retry after checking Blocks Mail.",
         );
       } else if (dialog.kind === "confirm") {
+        const dissolving =
+          dialog.method === "DELETE" && dialog.path === base;
         await api(
           dialog.path!,
           dialog.method || "POST",
           dialog.method === "DELETE" ? undefined : { ...dialog.body, revision },
           dialog.method === "DELETE" ? revision : undefined,
         );
-        await refresh();
-        setNotice("Change saved.");
+        if (dissolving) {
+          setOrgId("");
+          setData(null);
+          await refreshOrganizations();
+          setNotice(
+            "Organization workspace removed. IAM accounts were kept.",
+          );
+        } else {
+          await refresh();
+          setNotice("Change saved.");
+        }
       }
       setDialog(null);
     } catch (e) {
@@ -811,13 +846,31 @@ export default function RbacPortal() {
               <div className="rbac-actions">
                 {view === "units" && organizationAdmin && (
                   <>
-                    {organizationManager&&<button
+                    {organizationManager&&<>
+                    <button
                       className="button secondary"
                       onClick={() => show({ kind: "settings" })}
                     >
                       <Settings2 size={17} />
                       Settings
-                    </button>}
+                    </button>
+                    {(workspace.companyOwner||actor.superAdmin)&&(
+                      <button
+                        className="button secondary rbac-danger"
+                        onClick={() =>
+                          show({
+                            kind: "confirm",
+                            message:
+                              "Remove this organization workspace? All RBAC units, memberships and pending invitations are cleared. IAM accounts are kept.",
+                            path: base,
+                            method: "DELETE",
+                          })
+                        }
+                      >
+                        Remove organization
+                      </button>
+                    )}
+                    </>}
                     <button
                       className="button primary"
                       onClick={() => show({ kind: "unit" })}
@@ -1147,6 +1200,22 @@ export default function RbacPortal() {
                             >
                               Change role
                             </button>
+                            {(workspace.companyOwner||actor.superAdmin)&&
+                              m.role==="organization-admin"&&(
+                              <button
+                                onClick={() =>
+                                  show({
+                                    kind: "confirm",
+                                    message: `Transfer company ownership to ${profile(m.userId).name}? You remain an Organization Admin for existing units.`,
+                                    path: `${base}/ownership`,
+                                    method: "POST",
+                                    body: { userId: m.userId },
+                                  })
+                                }
+                              >
+                                Make owner
+                              </button>
+                            )}
                             <button
                               className="rbac-danger"
                               onClick={() =>
@@ -1182,7 +1251,7 @@ export default function RbacPortal() {
                 <div className="rbac-panel table-wrap"><h2>Who can manage whom in this workspace</h2>
                 <table aria-label="Workspace role management"><thead><tr><th>Manager</th><th>Can manage</th><th>Boundary</th></tr></thead><tbody>
                   <tr><td>Organization Owner</td><td>Everything in the company, including Organization Admins and role management</td><td>Own company after signup</td></tr>
-                  <tr><td>Organization Admin</td><td>Create units; invite and manage Unit Admins and Unit Members</td><td>All units in the company</td></tr>
+                  <tr><td>Organization Admin</td><td>Create units; invite and manage Unit Admins and Unit Members</td><td>Owner-authorized units, plus units they create</td></tr>
                   <tr><td>Unit Admin</td><td>Invite and manage Unit Members</td><td>Assigned unit only, within what Organization Admin permits</td></tr>
                   <tr><td>Unit Member</td><td>No user or role management</td><td>Use only what Organization Admin permits in assigned units</td></tr>
                 </tbody></table></div>
@@ -1191,12 +1260,12 @@ export default function RbacPortal() {
                     {name:"Organization Owner",scope:"Own company",items:["Assigned automatically when you create your company after signup","Create and manage all units and organization members","Appoint Organization Admins and control role management","Full access to every unit in the company"]},
                     {
                       name: "Organization Admin",
-                      scope: "Company units",
+                      scope: "Authorized units",
                       items: [
-                        "Added by the Organization Owner",
-                        "Create units for the organization",
-                        "Invite and manage Unit Admins and Unit Members",
-                        "Control Unit Admin access inside units",
+                        "Added by the Organization Owner with selected units",
+                        "Create units (auto-authorized for themselves)",
+                        "Invite and manage Unit Admins and Unit Members in authorized units",
+                        "Cannot change company settings or appoint Organization Admins",
                       ],
                     },
                     {
@@ -1517,8 +1586,40 @@ export default function RbacPortal() {
                       </label>
                       <small>
                         The last active Organization Admin cannot be removed or
-                        demoted.
+                        demoted. Organization Admins only manage units you
+                        authorize (plus units they create later).
                       </small>
+                      {appointedRole === "organization-admin" && (
+                        <fieldset className="rbac-unit-scope">
+                          <legend>Authorized units</legend>
+                          {workspace?.units.filter((u) => u.status === "active")
+                            .length ? (
+                            workspace.units
+                              .filter((u) => u.status === "active")
+                              .map((u) => (
+                                <label key={u.id} className="rbac-checkbox">
+                                  <input
+                                    type="checkbox"
+                                    checked={managedUnitIds.includes(u.id)}
+                                    onChange={(e) =>
+                                      setManagedUnitIds((current) =>
+                                        e.target.checked
+                                          ? [...new Set([...current, u.id])]
+                                          : current.filter((id) => id !== u.id),
+                                      )
+                                    }
+                                  />
+                                  {u.name}
+                                </label>
+                              ))
+                          ) : (
+                            <p className="muted">
+                              No units yet. They can create units after
+                              acceptance; those become authorized automatically.
+                            </p>
+                          )}
+                        </fieldset>
+                      )}
                     </>
                   )}
                   {(dialog.kind === "assignment" ||
@@ -1596,6 +1697,39 @@ export default function RbacPortal() {
                           </>}
                         </select>
                       </label>
+                      {dialog.kind === "invite" &&
+                        !dialog.unitId &&
+                        appointedRole === "organization-admin" && (
+                          <fieldset className="rbac-unit-scope">
+                            <legend>Authorized units</legend>
+                            {workspace?.units.filter((u) => u.status === "active")
+                              .length ? (
+                              workspace.units
+                                .filter((u) => u.status === "active")
+                                .map((u) => (
+                                  <label key={u.id} className="rbac-checkbox">
+                                    <input
+                                      type="checkbox"
+                                      checked={managedUnitIds.includes(u.id)}
+                                      onChange={(e) =>
+                                        setManagedUnitIds((current) =>
+                                          e.target.checked
+                                            ? [...new Set([...current, u.id])]
+                                            : current.filter((id) => id !== u.id),
+                                        )
+                                      }
+                                    />
+                                    {u.name}
+                                  </label>
+                                ))
+                            ) : (
+                              <p className="muted">
+                                No units yet. They can create units after
+                                acceptance; those become authorized automatically.
+                              </p>
+                            )}
+                          </fieldset>
+                        )}
                     </>
                   )}
                 </>

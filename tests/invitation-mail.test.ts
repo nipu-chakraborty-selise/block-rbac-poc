@@ -1,14 +1,21 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {invitationLink,invitationRoleLabel,sendInvitationMail} from '../src/lib/rbac/invitation-mail';
+import {invitationLink,invitationMailLink,invitationRoleLabel,sendInvitationMail} from '../src/lib/rbac/invitation-mail';
 
-test('Organization Owner invitation emails use organization context and queue through Blocks Mail',async()=>{
+test('Copied invitation links keep the token in the URL fragment',()=>{
  assert.equal(invitationRoleLabel('organization-admin'),'Organization Admin');
  assert.equal(invitationRoleLabel('unit-user'),'Unit Member');
  const href=invitationLink('https://app.example','org-1','invite-1','token-1');
  assert.match(href,/\/activate\?/);
  assert.match(href,/organization=org-1/);
  assert.match(href,/invite=invite-1/);
+ assert.match(href,/#token=token-1$/);
+ assert.doesNotMatch(href,/[?&]token=/);
+});
+
+test('Mail invitation links use the continue page so clients that strip fragments still work',async()=>{
+ const href=invitationMailLink('https://app.example','org-1','invite-1','token-1');
+ assert.match(href,/\/invite\/continue\?/);
  assert.match(href,/[?&]token=token-1(?:&|$)/);
  assert.doesNotMatch(href,/#/);
 
