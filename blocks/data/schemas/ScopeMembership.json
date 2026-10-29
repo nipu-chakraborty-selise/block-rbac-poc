@@ -1,0 +1,42 @@
+{
+  "schemaName": "ScopeMembership",
+  "collectionName": "ScopeMembership",
+  "schemaType": 1,
+  "fields": [
+    {
+      "name": "id",
+      "type": "ID",
+      "isArray": false
+    },
+    {
+      "name": "countryOrganizationId",
+      "type": "ID",
+      "isArray": false
+    },
+    {
+      "name": "userId",
+      "type": "ID",
+      "isArray": false
+    },
+    {
+      "name": "scopeType",
+      "type": "String",
+      "isArray": false
+    },
+    {
+      "name": "scopeId",
+      "type": "ID",
+      "isArray": false
+    },
+    {
+      "name": "roleId",
+      "type": "ID",
+      "isArray": false
+    },
+    {
+      "name": "status",
+      "type": "String",
+      "isArray": false
+    }
+  ]
+}

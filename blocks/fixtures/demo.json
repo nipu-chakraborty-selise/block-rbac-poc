@@ -1,0 +1,468 @@
+{
+  "countries": [
+    {
+      "id": "bd",
+      "name": "Bangladesh",
+      "code": "BD",
+      "status": "active"
+    },
+    {
+      "id": "de",
+      "name": "Germany",
+      "code": "DE",
+      "status": "active"
+    },
+    {
+      "id": "np",
+      "name": "Nepal",
+      "code": "NP",
+      "status": "active"
+    }
+  ],
+  "users": [
+    {
+      "id": "super",
+      "name": "Alex Morgan",
+      "email": "super@demo.local",
+      "verified": true,
+      "projectId": "rbac-poc",
+      "countryIds": [
+        "bd",
+        "de",
+        "np"
+      ]
+    },
+    {
+      "id": "hr-admin",
+      "name": "Ayesha Rahman",
+      "email": "hr-admin@demo.local",
+      "verified": true,
+      "projectId": "rbac-poc",
+      "countryIds": [
+        "bd"
+      ]
+    },
+    {
+      "id": "recruit-admin",
+      "name": "Farhan Ahmed",
+      "email": "recruit-admin@demo.local",
+      "verified": true,
+      "projectId": "rbac-poc",
+      "countryIds": [
+        "bd"
+      ]
+    },
+    {
+      "id": "recruit-member",
+      "name": "Nadia Islam",
+      "email": "recruit-member@demo.local",
+      "verified": true,
+      "projectId": "rbac-poc",
+      "countryIds": [
+        "bd"
+      ]
+    },
+    {
+      "id": "payroll-member",
+      "name": "Rafiq Hasan",
+      "email": "payroll-member@demo.local",
+      "verified": true,
+      "projectId": "rbac-poc",
+      "countryIds": [
+        "bd"
+      ]
+    },
+    {
+      "id": "germany-admin",
+      "name": "Lena Weber",
+      "email": "germany-admin@demo.local",
+      "verified": true,
+      "projectId": "rbac-poc",
+      "countryIds": [
+        "de"
+      ]
+    },
+    {
+      "id": "unassigned",
+      "name": "Sam Taylor",
+      "email": "unassigned@demo.local",
+      "verified": true,
+      "projectId": "rbac-poc",
+      "countryIds": [
+        "bd"
+      ]
+    }
+  ],
+  "departments": [
+    {
+      "id": "hrm",
+      "countryOrganizationId": "bd",
+      "name": "HRM",
+      "status": "active",
+      "createdBy": "super",
+      "createdAt": "2026-10-13T04:24:34.668Z",
+      "updatedAt": "2026-10-13T04:24:34.668Z"
+    },
+    {
+      "id": "legal",
+      "countryOrganizationId": "bd",
+      "name": "Legal",
+      "status": "active",
+      "createdBy": "super",
+      "createdAt": "2026-10-13T04:24:34.668Z",
+      "updatedAt": "2026-10-13T04:24:34.668Z"
+    },
+    {
+      "id": "de-hrm",
+      "countryOrganizationId": "de",
+      "name": "HRM",
+      "status": "active",
+      "createdBy": "super",
+      "createdAt": "2026-10-13T04:24:34.668Z",
+      "updatedAt": "2026-10-13T04:24:34.668Z"
+    },
+    {
+      "id": "technical",
+      "countryOrganizationId": "np",
+      "name": "Technical Team",
+      "status": "active",
+      "createdBy": "super",
+      "createdAt": "2026-10-13T04:24:34.668Z",
+      "updatedAt": "2026-10-13T04:24:34.668Z"
+    }
+  ],
+  "groups": [
+    {
+      "id": "recruitment",
+      "departmentId": "hrm",
+      "countryOrganizationId": "bd",
+      "name": "Recruitment",
+      "status": "active",
+      "createdBy": "super",
+      "createdAt": "2026-10-13T04:24:34.668Z",
+      "updatedAt": "2026-10-13T04:24:34.668Z"
+    },
+    {
+      "id": "payroll",
+      "departmentId": "hrm",
+      "countryOrganizationId": "bd",
+      "name": "Payroll",
+      "status": "active",
+      "createdBy": "super",
+      "createdAt": "2026-10-13T04:24:34.668Z",
+      "updatedAt": "2026-10-13T04:24:34.668Z"
+    },
+    {
+      "id": "contract",
+      "departmentId": "legal",
+      "countryOrganizationId": "bd",
+      "name": "Contract Review",
+      "status": "active",
+      "createdBy": "super",
+      "createdAt": "2026-10-13T04:24:34.668Z",
+      "updatedAt": "2026-10-13T04:24:34.668Z"
+    }
+  ],
+  "roles": [
+    {
+      "id": "bd-dept",
+      "countryOrganizationId": "bd",
+      "name": "Department admin",
+      "permissions": [
+        "department.view",
+        "department.update",
+        "department.archive",
+        "group.view",
+        "group.create",
+        "group.update",
+        "group.archive",
+        "member.invite",
+        "member.remove",
+        "member.assign-role",
+        "resource.view",
+        "resource.create",
+        "resource.update",
+        "resource.delete"
+      ],
+      "delegablePermissions": [
+        "department.view",
+        "department.update",
+        "department.archive",
+        "group.view",
+        "group.create",
+        "group.update",
+        "group.archive",
+        "member.invite",
+        "member.remove",
+        "member.assign-role",
+        "resource.view",
+        "resource.create",
+        "resource.update",
+        "resource.delete"
+      ]
+    },
+    {
+      "id": "bd-group",
+      "countryOrganizationId": "bd",
+      "name": "Group admin",
+      "permissions": [
+        "group.view",
+        "group.update",
+        "group.archive",
+        "member.invite",
+        "member.remove",
+        "member.assign-role",
+        "resource.view",
+        "resource.create",
+        "resource.update",
+        "resource.delete"
+      ],
+      "delegablePermissions": [
+        "group.view",
+        "resource.view"
+      ]
+    },
+    {
+      "id": "bd-member",
+      "countryOrganizationId": "bd",
+      "name": "Member",
+      "permissions": [
+        "group.view",
+        "resource.view"
+      ],
+      "delegablePermissions": []
+    },
+    {
+      "id": "de-dept",
+      "countryOrganizationId": "de",
+      "name": "Department admin",
+      "permissions": [
+        "department.view",
+        "department.update",
+        "department.archive",
+        "group.view",
+        "group.create",
+        "group.update",
+        "group.archive",
+        "member.invite",
+        "member.remove",
+        "member.assign-role",
+        "resource.view",
+        "resource.create",
+        "resource.update",
+        "resource.delete"
+      ],
+      "delegablePermissions": [
+        "department.view",
+        "department.update",
+        "department.archive",
+        "group.view",
+        "group.create",
+        "group.update",
+        "group.archive",
+        "member.invite",
+        "member.remove",
+        "member.assign-role",
+        "resource.view",
+        "resource.create",
+        "resource.update",
+        "resource.delete"
+      ]
+    },
+    {
+      "id": "de-group",
+      "countryOrganizationId": "de",
+      "name": "Group admin",
+      "permissions": [
+        "group.view",
+        "group.update",
+        "group.archive",
+        "member.invite",
+        "member.remove",
+        "member.assign-role",
+        "resource.view",
+        "resource.create",
+        "resource.update",
+        "resource.delete"
+      ],
+      "delegablePermissions": [
+        "group.view",
+        "resource.view"
+      ]
+    },
+    {
+      "id": "de-member",
+      "countryOrganizationId": "de",
+      "name": "Member",
+      "permissions": [
+        "group.view",
+        "resource.view"
+      ],
+      "delegablePermissions": []
+    },
+    {
+      "id": "np-dept",
+      "countryOrganizationId": "np",
+      "name": "Department admin",
+      "permissions": [
+        "department.view",
+        "department.update",
+        "department.archive",
+        "group.view",
+        "group.create",
+        "group.update",
+        "group.archive",
+        "member.invite",
+        "member.remove",
+        "member.assign-role",
+        "resource.view",
+        "resource.create",
+        "resource.update",
+        "resource.delete"
+      ],
+      "delegablePermissions": [
+        "department.view",
+        "department.update",
+        "department.archive",
+        "group.view",
+        "group.create",
+        "group.update",
+        "group.archive",
+        "member.invite",
+        "member.remove",
+        "member.assign-role",
+        "resource.view",
+        "resource.create",
+        "resource.update",
+        "resource.delete"
+      ]
+    },
+    {
+      "id": "np-group",
+      "countryOrganizationId": "np",
+      "name": "Group admin",
+      "permissions": [
+        "group.view",
+        "group.update",
+        "group.archive",
+        "member.invite",
+        "member.remove",
+        "member.assign-role",
+        "resource.view",
+        "resource.create",
+        "resource.update",
+        "resource.delete"
+      ],
+      "delegablePermissions": [
+        "group.view",
+        "resource.view"
+      ]
+    },
+    {
+      "id": "np-member",
+      "countryOrganizationId": "np",
+      "name": "Member",
+      "permissions": [
+        "group.view",
+        "resource.view"
+      ],
+      "delegablePermissions": []
+    }
+  ],
+  "memberships": [
+    {
+      "id": "m-hr-admin",
+      "userId": "hr-admin",
+      "countryOrganizationId": "bd",
+      "scopeType": "department",
+      "scopeId": "hrm",
+      "roleId": "bd-dept",
+      "status": "active"
+    },
+    {
+      "id": "m-recruit-admin",
+      "userId": "recruit-admin",
+      "countryOrganizationId": "bd",
+      "scopeType": "group",
+      "scopeId": "recruitment",
+      "roleId": "bd-group",
+      "status": "active"
+    },
+    {
+      "id": "m-recruit-member",
+      "userId": "recruit-member",
+      "countryOrganizationId": "bd",
+      "scopeType": "group",
+      "scopeId": "recruitment",
+      "roleId": "bd-member",
+      "status": "active"
+    },
+    {
+      "id": "m-payroll-member",
+      "userId": "payroll-member",
+      "countryOrganizationId": "bd",
+      "scopeType": "group",
+      "scopeId": "payroll",
+      "roleId": "bd-member",
+      "status": "active"
+    },
+    {
+      "id": "m-germany-admin",
+      "userId": "germany-admin",
+      "countryOrganizationId": "de",
+      "scopeType": "department",
+      "scopeId": "de-hrm",
+      "roleId": "de-dept",
+      "status": "active"
+    }
+  ],
+  "invitations": [],
+  "resources": [
+    {
+      "id": "r-recruit",
+      "countryOrganizationId": "bd",
+      "departmentId": "hrm",
+      "groupId": "recruitment",
+      "title": "Recruitment handbook",
+      "content": "Interview stages, candidate scorecards, and onboarding guidelines for the Recruitment team.",
+      "createdBy": "super"
+    },
+    {
+      "id": "r-payroll",
+      "countryOrganizationId": "bd",
+      "departmentId": "hrm",
+      "groupId": "payroll",
+      "title": "Payroll processing checklist",
+      "content": "Confidential payroll approval workflow. Visible only within the Payroll scope.",
+      "createdBy": "super"
+    },
+    {
+      "id": "r-germany",
+      "countryOrganizationId": "de",
+      "departmentId": "de-hrm",
+      "groupId": null,
+      "title": "Germany HR operations",
+      "content": "Local onboarding and HR operations for the Germany organization.",
+      "createdBy": "super"
+    }
+  ],
+  "audit": [
+    {
+      "id": "seed-event",
+      "actorId": "super",
+      "action": "workspace.provisioned",
+      "countryOrganizationId": "bd",
+      "scopeId": "hrm",
+      "targetId": "rbac-poc",
+      "timestamp": "2026-10-13T04:24:34.668Z"
+    }
+  ],
+  "admins": [
+    {
+      "id": "bootstrap-super",
+      "userId": "super",
+      "grantedBy": "explicit-seed-provisioning",
+      "createdAt": "2026-10-13T04:24:34.668Z"
+    }
+  ]
+}

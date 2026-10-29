@@ -1,0 +1,32 @@
+{
+  "schemaName": "ScopedRole",
+  "collectionName": "ScopedRole",
+  "schemaType": 1,
+  "fields": [
+    {
+      "name": "id",
+      "type": "ID",
+      "isArray": false
+    },
+    {
+      "name": "countryOrganizationId",
+      "type": "ID",
+      "isArray": false
+    },
+    {
+      "name": "name",
+      "type": "String",
+      "isArray": false
+    },
+    {
+      "name": "permissions",
+      "type": "String",
+      "isArray": true
+    },
+    {
+      "name": "delegablePermissions",
+      "type": "String",
+      "isArray": true
+    }
+  ]
+}

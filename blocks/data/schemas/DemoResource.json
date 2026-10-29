@@ -1,0 +1,42 @@
+{
+  "schemaName": "DemoResource",
+  "collectionName": "DemoResource",
+  "schemaType": 1,
+  "fields": [
+    {
+      "name": "id",
+      "type": "ID",
+      "isArray": false
+    },
+    {
+      "name": "countryOrganizationId",
+      "type": "ID",
+      "isArray": false
+    },
+    {
+      "name": "departmentId",
+      "type": "ID",
+      "isArray": false
+    },
+    {
+      "name": "groupId",
+      "type": "ID",
+      "isArray": false
+    },
+    {
+      "name": "title",
+      "type": "String",
+      "isArray": false
+    },
+    {
+      "name": "content",
+      "type": "String",
+      "isArray": false
+    },
+    {
+      "name": "createdBy",
+      "type": "ID",
+      "isArray": false
+    }
+  ]
+}

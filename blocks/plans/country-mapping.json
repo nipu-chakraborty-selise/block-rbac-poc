@@ -1,0 +1,20 @@
+[
+  {
+    "code": "BD",
+    "name": "Bangladesh",
+    "id": "b00ac762-4b4d-4568-896e-ecdddb1e312c",
+    "isDisabled": false
+  },
+  {
+    "code": "DE",
+    "name": "Germany",
+    "id": "3fc0710f-85bf-4478-8cf5-6be2d7586fc1",
+    "isDisabled": false
+  },
+  {
+    "code": "NP",
+    "name": "Nepal",
+    "id": "b0cd4b93-dd9b-4038-a031-5f3ad928a7f5",
+    "isDisabled": false
+  }
+]

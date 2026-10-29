@@ -1,0 +1,15 @@
+{
+  "verifiedAt": "2026-10-14T18:05:30.079Z",
+  "sender": "blocks@selise.io",
+  "testRecipient": "pro.nipu@gmail.com",
+  "hostedSignupInitiationVerified": true,
+  "mailRequestAccepted": true,
+  "inboxDeliveryConfirmed": false,
+  "newAccountsCreated": 0,
+  "rolesGranted": 0,
+  "mailResponseFields": [
+    "itemId",
+    "errors",
+    "isSuccess"
+  ]
+}

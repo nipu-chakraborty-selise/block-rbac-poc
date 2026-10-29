@@ -1,0 +1,42 @@
+{
+  "schemaName": "AuditEvent",
+  "collectionName": "AuditEvent",
+  "schemaType": 1,
+  "fields": [
+    {
+      "name": "id",
+      "type": "ID",
+      "isArray": false
+    },
+    {
+      "name": "countryOrganizationId",
+      "type": "ID",
+      "isArray": false
+    },
+    {
+      "name": "actorId",
+      "type": "ID",
+      "isArray": false
+    },
+    {
+      "name": "action",
+      "type": "String",
+      "isArray": false
+    },
+    {
+      "name": "scopeId",
+      "type": "ID",
+      "isArray": false
+    },
+    {
+      "name": "targetId",
+      "type": "ID",
+      "isArray": false
+    },
+    {
+      "name": "timestamp",
+      "type": "DateTime",
+      "isArray": false
+    }
+  ]
+}

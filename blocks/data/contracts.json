@@ -1,0 +1,289 @@
+{
+  "departments": {
+    "schemaName": "Department",
+    "fields": [
+      "id",
+      "countryOrganizationId",
+      "name",
+      "status",
+      "createdBy",
+      "createdAt",
+      "updatedAt"
+    ],
+    "list": {
+      "query": "query getDepartments($input: DynamicQueryInput) { getDepartments(input:$input) { items { ItemId LastUpdatedDate id countryOrganizationId name status createdBy createdAt updatedAt } totalCount } }",
+      "operationName": "getDepartments",
+      "resultField": "getDepartments"
+    },
+    "create": {
+      "query": "mutation insertDepartment($input: DepartmentInsertInput) { insertDepartment(input:$input) { acknowledged itemId message totalImpactedData } }",
+      "operationName": "insertDepartment",
+      "resultField": "insertDepartment"
+    },
+    "update": {
+      "query": "mutation updateDepartment($filter:String,$where:DepartmentFilterInput,$input: DepartmentUpdateInput) { updateDepartment(filter:$filter,where:$where,input:$input) { acknowledged itemId message totalImpactedData } }",
+      "operationName": "updateDepartment",
+      "resultField": "updateDepartment"
+    },
+    "delete": {
+      "query": "mutation deleteDepartment($filter:String,$input: DepartmentDeleteInput) { deleteDepartment(filter:$filter,input:$input) { acknowledged itemId message totalImpactedData } }",
+      "operationName": "deleteDepartment",
+      "resultField": "deleteDepartment"
+    }
+  },
+  "groups": {
+    "schemaName": "Group",
+    "fields": [
+      "id",
+      "countryOrganizationId",
+      "departmentId",
+      "name",
+      "status",
+      "createdBy",
+      "createdAt",
+      "updatedAt"
+    ],
+    "list": {
+      "query": "query getGroups($input: DynamicQueryInput) { getGroups(input:$input) { items { ItemId LastUpdatedDate id countryOrganizationId departmentId name status createdBy createdAt updatedAt } totalCount } }",
+      "operationName": "getGroups",
+      "resultField": "getGroups"
+    },
+    "create": {
+      "query": "mutation insertGroup($input: GroupInsertInput) { insertGroup(input:$input) { acknowledged itemId message totalImpactedData } }",
+      "operationName": "insertGroup",
+      "resultField": "insertGroup"
+    },
+    "update": {
+      "query": "mutation updateGroup($filter:String,$where:GroupFilterInput,$input: GroupUpdateInput) { updateGroup(filter:$filter,where:$where,input:$input) { acknowledged itemId message totalImpactedData } }",
+      "operationName": "updateGroup",
+      "resultField": "updateGroup"
+    },
+    "delete": {
+      "query": "mutation deleteGroup($filter:String,$input: GroupDeleteInput) { deleteGroup(filter:$filter,input:$input) { acknowledged itemId message totalImpactedData } }",
+      "operationName": "deleteGroup",
+      "resultField": "deleteGroup"
+    }
+  },
+  "roles": {
+    "schemaName": "ScopedRole",
+    "fields": [
+      "id",
+      "countryOrganizationId",
+      "name",
+      "permissions",
+      "delegablePermissions"
+    ],
+    "list": {
+      "query": "query getScopedRoles($input: DynamicQueryInput) { getScopedRoles(input:$input) { items { ItemId LastUpdatedDate id countryOrganizationId name permissions delegablePermissions } totalCount } }",
+      "operationName": "getScopedRoles",
+      "resultField": "getScopedRoles"
+    },
+    "create": {
+      "query": "mutation insertScopedRole($input: ScopedRoleInsertInput) { insertScopedRole(input:$input) { acknowledged itemId message totalImpactedData } }",
+      "operationName": "insertScopedRole",
+      "resultField": "insertScopedRole"
+    },
+    "update": {
+      "query": "mutation updateScopedRole($filter:String,$where:ScopedRoleFilterInput,$input: ScopedRoleUpdateInput) { updateScopedRole(filter:$filter,where:$where,input:$input) { acknowledged itemId message totalImpactedData } }",
+      "operationName": "updateScopedRole",
+      "resultField": "updateScopedRole"
+    },
+    "delete": {
+      "query": "mutation deleteScopedRole($filter:String,$input: ScopedRoleDeleteInput) { deleteScopedRole(filter:$filter,input:$input) { acknowledged itemId message totalImpactedData } }",
+      "operationName": "deleteScopedRole",
+      "resultField": "deleteScopedRole"
+    }
+  },
+  "memberships": {
+    "schemaName": "ScopeMembership",
+    "fields": [
+      "id",
+      "countryOrganizationId",
+      "userId",
+      "scopeType",
+      "scopeId",
+      "roleId",
+      "status"
+    ],
+    "list": {
+      "query": "query getScopeMemberships($input: DynamicQueryInput) { getScopeMemberships(input:$input) { items { ItemId LastUpdatedDate id countryOrganizationId userId scopeType scopeId roleId status } totalCount } }",
+      "operationName": "getScopeMemberships",
+      "resultField": "getScopeMemberships"
+    },
+    "create": {
+      "query": "mutation insertScopeMembership($input: ScopeMembershipInsertInput) { insertScopeMembership(input:$input) { acknowledged itemId message totalImpactedData } }",
+      "operationName": "insertScopeMembership",
+      "resultField": "insertScopeMembership"
+    },
+    "update": {
+      "query": "mutation updateScopeMembership($filter:String,$where:ScopeMembershipFilterInput,$input: ScopeMembershipUpdateInput) { updateScopeMembership(filter:$filter,where:$where,input:$input) { acknowledged itemId message totalImpactedData } }",
+      "operationName": "updateScopeMembership",
+      "resultField": "updateScopeMembership"
+    },
+    "delete": {
+      "query": "mutation deleteScopeMembership($filter:String,$input: ScopeMembershipDeleteInput) { deleteScopeMembership(filter:$filter,input:$input) { acknowledged itemId message totalImpactedData } }",
+      "operationName": "deleteScopeMembership",
+      "resultField": "deleteScopeMembership"
+    }
+  },
+  "invitations": {
+    "schemaName": "Invitation",
+    "fields": [
+      "id",
+      "countryOrganizationId",
+      "email",
+      "scopeType",
+      "scopeId",
+      "roleId",
+      "signupLinkId",
+      "invitedBy",
+      "status",
+      "expiresAt",
+      "acceptedBy",
+      "acceptedAt"
+    ],
+    "list": {
+      "query": "query getInvitations($input: DynamicQueryInput) { getInvitations(input:$input) { items { ItemId LastUpdatedDate id countryOrganizationId email scopeType scopeId roleId signupLinkId invitedBy status expiresAt acceptedBy acceptedAt } totalCount } }",
+      "operationName": "getInvitations",
+      "resultField": "getInvitations"
+    },
+    "create": {
+      "query": "mutation insertInvitation($input: InvitationInsertInput) { insertInvitation(input:$input) { acknowledged itemId message totalImpactedData } }",
+      "operationName": "insertInvitation",
+      "resultField": "insertInvitation"
+    },
+    "update": {
+      "query": "mutation updateInvitation($filter:String,$where:InvitationFilterInput,$input: InvitationUpdateInput) { updateInvitation(filter:$filter,where:$where,input:$input) { acknowledged itemId message totalImpactedData } }",
+      "operationName": "updateInvitation",
+      "resultField": "updateInvitation"
+    },
+    "delete": {
+      "query": "mutation deleteInvitation($filter:String,$input: InvitationDeleteInput) { deleteInvitation(filter:$filter,input:$input) { acknowledged itemId message totalImpactedData } }",
+      "operationName": "deleteInvitation",
+      "resultField": "deleteInvitation"
+    }
+  },
+  "resources": {
+    "schemaName": "DemoResource",
+    "fields": [
+      "id",
+      "countryOrganizationId",
+      "departmentId",
+      "groupId",
+      "title",
+      "content",
+      "createdBy"
+    ],
+    "list": {
+      "query": "query getDemoResources($input: DynamicQueryInput) { getDemoResources(input:$input) { items { ItemId LastUpdatedDate id countryOrganizationId departmentId groupId title content createdBy } totalCount } }",
+      "operationName": "getDemoResources",
+      "resultField": "getDemoResources"
+    },
+    "create": {
+      "query": "mutation insertDemoResource($input: DemoResourceInsertInput) { insertDemoResource(input:$input) { acknowledged itemId message totalImpactedData } }",
+      "operationName": "insertDemoResource",
+      "resultField": "insertDemoResource"
+    },
+    "update": {
+      "query": "mutation updateDemoResource($filter:String,$where:DemoResourceFilterInput,$input: DemoResourceUpdateInput) { updateDemoResource(filter:$filter,where:$where,input:$input) { acknowledged itemId message totalImpactedData } }",
+      "operationName": "updateDemoResource",
+      "resultField": "updateDemoResource"
+    },
+    "delete": {
+      "query": "mutation deleteDemoResource($filter:String,$input: DemoResourceDeleteInput) { deleteDemoResource(filter:$filter,input:$input) { acknowledged itemId message totalImpactedData } }",
+      "operationName": "deleteDemoResource",
+      "resultField": "deleteDemoResource"
+    }
+  },
+  "audit": {
+    "schemaName": "AuditEvent",
+    "fields": [
+      "id",
+      "countryOrganizationId",
+      "actorId",
+      "action",
+      "scopeId",
+      "targetId",
+      "timestamp"
+    ],
+    "list": {
+      "query": "query getAuditEvents($input: DynamicQueryInput) { getAuditEvents(input:$input) { items { ItemId LastUpdatedDate id countryOrganizationId actorId action scopeId targetId timestamp } totalCount } }",
+      "operationName": "getAuditEvents",
+      "resultField": "getAuditEvents"
+    },
+    "create": {
+      "query": "mutation insertAuditEvent($input: AuditEventInsertInput) { insertAuditEvent(input:$input) { acknowledged itemId message totalImpactedData } }",
+      "operationName": "insertAuditEvent",
+      "resultField": "insertAuditEvent"
+    },
+    "update": {
+      "query": "mutation updateAuditEvent($filter:String,$where:AuditEventFilterInput,$input: AuditEventUpdateInput) { updateAuditEvent(filter:$filter,where:$where,input:$input) { acknowledged itemId message totalImpactedData } }",
+      "operationName": "updateAuditEvent",
+      "resultField": "updateAuditEvent"
+    },
+    "delete": {
+      "query": "mutation deleteAuditEvent($filter:String,$input: AuditEventDeleteInput) { deleteAuditEvent(filter:$filter,input:$input) { acknowledged itemId message totalImpactedData } }",
+      "operationName": "deleteAuditEvent",
+      "resultField": "deleteAuditEvent"
+    }
+  },
+  "admins": {
+    "schemaName": "ApplicationAdminGrant",
+    "fields": [
+      "id",
+      "userId",
+      "grantedBy",
+      "createdAt"
+    ],
+    "list": {
+      "query": "query getApplicationAdminGrants($input: DynamicQueryInput) { getApplicationAdminGrants(input:$input) { items { ItemId LastUpdatedDate id userId grantedBy createdAt } totalCount } }",
+      "operationName": "getApplicationAdminGrants",
+      "resultField": "getApplicationAdminGrants"
+    },
+    "create": {
+      "query": "mutation insertApplicationAdminGrant($input: ApplicationAdminGrantInsertInput) { insertApplicationAdminGrant(input:$input) { acknowledged itemId message totalImpactedData } }",
+      "operationName": "insertApplicationAdminGrant",
+      "resultField": "insertApplicationAdminGrant"
+    },
+    "update": {
+      "query": "mutation updateApplicationAdminGrant($filter:String,$where:ApplicationAdminGrantFilterInput,$input: ApplicationAdminGrantUpdateInput) { updateApplicationAdminGrant(filter:$filter,where:$where,input:$input) { acknowledged itemId message totalImpactedData } }",
+      "operationName": "updateApplicationAdminGrant",
+      "resultField": "updateApplicationAdminGrant"
+    },
+    "delete": {
+      "query": "mutation deleteApplicationAdminGrant($filter:String,$input: ApplicationAdminGrantDeleteInput) { deleteApplicationAdminGrant(filter:$filter,input:$input) { acknowledged itemId message totalImpactedData } }",
+      "operationName": "deleteApplicationAdminGrant",
+      "resultField": "deleteApplicationAdminGrant"
+    }
+  },
+  "countryMetadata": {
+    "schemaName": "CountryMetadata",
+    "fields": [
+      "id",
+      "countryOrganizationId",
+      "countryCode",
+      "displayName",
+      "status"
+    ],
+    "list": {
+      "query": "query getCountryMetadatas($input: DynamicQueryInput) { getCountryMetadatas(input:$input) { items { ItemId LastUpdatedDate id countryOrganizationId countryCode displayName status } totalCount } }",
+      "operationName": "getCountryMetadatas",
+      "resultField": "getCountryMetadatas"
+    },
+    "create": {
+      "query": "mutation insertCountryMetadata($input: CountryMetadataInsertInput) { insertCountryMetadata(input:$input) { acknowledged itemId message totalImpactedData } }",
+      "operationName": "insertCountryMetadata",
+      "resultField": "insertCountryMetadata"
+    },
+    "update": {
+      "query": "mutation updateCountryMetadata($filter:String,$where:CountryMetadataFilterInput,$input: CountryMetadataUpdateInput) { updateCountryMetadata(filter:$filter,where:$where,input:$input) { acknowledged itemId message totalImpactedData } }",
+      "operationName": "updateCountryMetadata",
+      "resultField": "updateCountryMetadata"
+    },
+    "delete": {
+      "query": "mutation deleteCountryMetadata($filter:String,$input: CountryMetadataDeleteInput) { deleteCountryMetadata(filter:$filter,input:$input) { acknowledged itemId message totalImpactedData } }",
+      "operationName": "deleteCountryMetadata",
+      "resultField": "deleteCountryMetadata"
+    }
+  }
+}

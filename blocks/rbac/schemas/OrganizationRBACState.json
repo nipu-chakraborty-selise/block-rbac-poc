@@ -1,0 +1,10 @@
+{
+  "schemaName": "OrganizationRBACState",
+  "collectionName": "OrganizationRBACState",
+  "schemaType": 1,
+  "fields": [
+    { "name": "id", "type": "ID", "isArray": false },
+    { "name": "organizationKey", "type": "ID", "isArray": false },
+    { "name": "stateJson", "type": "String", "isArray": false }
+  ]
+}

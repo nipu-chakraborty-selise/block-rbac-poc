@@ -1,0 +1,440 @@
+{
+  "checkedOn": "2026-10-12",
+  "source": "https://iam.seliseblocks.com/swagger/v1/swagger.json",
+  "cliVersion": "0.9.1",
+  "sdkVersion": "0.2.0",
+  "organizationPaths": {
+    "/api/iam/organizations/name/available": [
+      "get"
+    ],
+    "/api/iam/organizations/create": [
+      "post"
+    ],
+    "/api/iam/organizations/{id}": [
+      "post",
+      "get"
+    ],
+    "/api/iam/organizations": [
+      "get"
+    ],
+    "/api/iam/organizations/my": [
+      "get"
+    ],
+    "/api/iam/organizations/config": [
+      "post",
+      "get"
+    ],
+    "/api/iam/organizations/config/admin": [
+      "get"
+    ]
+  },
+  "schemas": {
+    "Authentication.DomainService.OAuth.RequestModel.SwitchOrganizationRequest": {
+      "type": "object",
+      "properties": {
+        "organization_id": {
+          "type": "string",
+          "nullable": true
+        }
+      },
+      "additionalProperties": false
+    },
+    "Iam.DomainService.Resources.CreateOrganizationRequest": {
+      "required": [
+        "name"
+      ],
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "nullable": true
+        },
+        "description": {
+          "type": "string",
+          "nullable": true
+        },
+        "defaultRoleForMembers": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "nullable": true
+        },
+        "defaultPermissionsForMembers": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "nullable": true
+        },
+        "email": {
+          "type": "string",
+          "nullable": true
+        },
+        "phoneNumber": {
+          "type": "string",
+          "nullable": true
+        },
+        "websiteUrl": {
+          "type": "string",
+          "nullable": true
+        },
+        "addresses": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/Iam.DomainService.Shared.Entities.Address"
+          },
+          "nullable": true
+        },
+        "attributes": {
+          "type": "object",
+          "additionalProperties": {},
+          "nullable": true
+        },
+        "theme": {
+          "$ref": "#/components/schemas/Iam.DomainService.Shared.Entities.Theme"
+        },
+        "logoUrl": {
+          "type": "string",
+          "nullable": true
+        },
+        "industry": {
+          "type": "string",
+          "nullable": true
+        },
+        "timeZone": {
+          "type": "string",
+          "nullable": true
+        },
+        "currency": {
+          "type": "string",
+          "nullable": true
+        },
+        "dateFormat": {
+          "type": "string",
+          "nullable": true
+        },
+        "timeFormat": {
+          "type": "string",
+          "nullable": true
+        },
+        "locale": {
+          "type": "string",
+          "nullable": true
+        },
+        "createdFrom": {
+          "$ref": "#/components/schemas/Iam.DomainService.Resources.CreatedFrom"
+        }
+      },
+      "additionalProperties": false
+    },
+    "Iam.DomainService.Resources.SaveOrganizationRequest": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "nullable": true
+        },
+        "description": {
+          "type": "string",
+          "nullable": true
+        },
+        "defaultRoleForMembers": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "nullable": true
+        },
+        "defaultPermissionsForMembers": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "nullable": true
+        },
+        "email": {
+          "type": "string",
+          "nullable": true
+        },
+        "phoneNumber": {
+          "type": "string",
+          "nullable": true
+        },
+        "websiteUrl": {
+          "type": "string",
+          "nullable": true
+        },
+        "addresses": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/Iam.DomainService.Shared.Entities.Address"
+          },
+          "nullable": true
+        },
+        "attributes": {
+          "type": "object",
+          "additionalProperties": {},
+          "nullable": true
+        },
+        "theme": {
+          "$ref": "#/components/schemas/Iam.DomainService.Shared.Entities.Theme"
+        },
+        "logoUrl": {
+          "type": "string",
+          "nullable": true
+        },
+        "logoId": {
+          "type": "string",
+          "nullable": true
+        },
+        "industry": {
+          "type": "string",
+          "nullable": true
+        },
+        "timeZone": {
+          "type": "string",
+          "nullable": true
+        },
+        "currency": {
+          "type": "string",
+          "nullable": true
+        },
+        "dateFormat": {
+          "type": "string",
+          "nullable": true
+        },
+        "timeFormat": {
+          "type": "string",
+          "nullable": true
+        },
+        "locale": {
+          "type": "string",
+          "nullable": true
+        },
+        "isEnable": {
+          "type": "boolean",
+          "nullable": true
+        }
+      },
+      "additionalProperties": false
+    },
+    "Iam.DomainService.Shared.Entities.Organization": {
+      "required": [
+        "name"
+      ],
+      "type": "object",
+      "properties": {
+        "itemId": {
+          "type": "string",
+          "nullable": true
+        },
+        "createdDate": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "lastUpdatedDate": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "createdBy": {
+          "type": "string",
+          "nullable": true
+        },
+        "language": {
+          "type": "string",
+          "nullable": true
+        },
+        "lastUpdatedBy": {
+          "type": "string",
+          "nullable": true
+        },
+        "organizationId": {
+          "type": "string",
+          "nullable": true
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "nullable": true
+        },
+        "name": {
+          "type": "string",
+          "nullable": true
+        },
+        "description": {
+          "type": "string",
+          "nullable": true
+        },
+        "parentOrganizationId": {
+          "type": "string",
+          "nullable": true
+        },
+        "shortCode": {
+          "type": "string",
+          "nullable": true
+        },
+        "isDisabled": {
+          "type": "boolean"
+        },
+        "defaultRoleForMembers": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "nullable": true
+        },
+        "defaultPermissionsForMembers": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "nullable": true
+        },
+        "email": {
+          "type": "string",
+          "nullable": true
+        },
+        "phoneNumber": {
+          "type": "string",
+          "nullable": true
+        },
+        "websiteUrl": {
+          "type": "string",
+          "nullable": true
+        },
+        "addresses": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/Iam.DomainService.Shared.Entities.Address"
+          },
+          "nullable": true
+        },
+        "theme": {
+          "$ref": "#/components/schemas/Iam.DomainService.Shared.Entities.Theme"
+        },
+        "logoUrl": {
+          "type": "string",
+          "nullable": true
+        },
+        "logoId": {
+          "type": "string",
+          "nullable": true
+        },
+        "industry": {
+          "type": "string",
+          "nullable": true
+        },
+        "timeZone": {
+          "type": "string",
+          "nullable": true
+        },
+        "currency": {
+          "type": "string",
+          "nullable": true
+        },
+        "dateFormat": {
+          "type": "string",
+          "nullable": true
+        },
+        "timeFormat": {
+          "type": "string",
+          "nullable": true
+        },
+        "locale": {
+          "type": "string",
+          "nullable": true
+        },
+        "attributes": {
+          "type": "object",
+          "additionalProperties": {},
+          "nullable": true
+        }
+      },
+      "additionalProperties": false
+    },
+    "Iam.DomainService.SignupLinks.GenerateSignupLinkRequest": {
+      "type": "object",
+      "properties": {
+        "configurationId": {
+          "type": "string",
+          "nullable": true
+        },
+        "email": {
+          "type": "string",
+          "nullable": true
+        },
+        "firstName": {
+          "type": "string",
+          "nullable": true
+        },
+        "lastName": {
+          "type": "string",
+          "nullable": true
+        },
+        "language": {
+          "type": "string",
+          "nullable": true
+        },
+        "organizationId": {
+          "type": "string",
+          "nullable": true
+        },
+        "roles": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "nullable": true
+        },
+        "permissions": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "nullable": true
+        },
+        "clientId": {
+          "type": "string",
+          "nullable": true
+        },
+        "redirectUri": {
+          "type": "string",
+          "nullable": true
+        },
+        "forwardedTo": {
+          "type": "string",
+          "nullable": true
+        },
+        "expiresInMinutes": {
+          "type": "integer",
+          "format": "int32",
+          "nullable": true
+        },
+        "maxRedemptions": {
+          "type": "integer",
+          "format": "int32",
+          "nullable": true
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "currentVerificationDate": "2026-10-13",
+  "tenantId": "Daeef3775f1414219a348639860aa66f0",
+  "tenantName": "RBAC POC",
+  "environment": "dev",
+  "initialSchemaCount": 0,
+  "schemaTypeEntity": 1,
+  "sqliteRemoved": true,
+  "provisioning": {
+    "schemaCount": 9,
+    "customSecurityOperations": 36,
+    "reloadVersion": 4,
+    "businessRecordsSeeded": false,
+    "oidcClientCount": 0,
+    "publicIntrospectionStatus": 401
+  }
+}

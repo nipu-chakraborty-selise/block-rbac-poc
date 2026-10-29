@@ -1,0 +1,32 @@
+{
+  "schemaName": "CountryMetadata",
+  "collectionName": "CountryMetadata",
+  "schemaType": 1,
+  "fields": [
+    {
+      "name": "id",
+      "type": "ID",
+      "isArray": false
+    },
+    {
+      "name": "countryOrganizationId",
+      "type": "ID",
+      "isArray": false
+    },
+    {
+      "name": "countryCode",
+      "type": "String",
+      "isArray": false
+    },
+    {
+      "name": "displayName",
+      "type": "String",
+      "isArray": false
+    },
+    {
+      "name": "status",
+      "type": "String",
+      "isArray": false
+    }
+  ]
+}

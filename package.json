@@ -1,0 +1,38 @@
+{
+  "name": "atlas-rbac-poc",
+  "version": "0.1.0",
+  "private": true,
+  "packageManager": "pnpm@11.6.0",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint",
+    "test": "tsx --test tests/*.test.ts",
+    "test:e2e": "node node_modules/@playwright/test/cli.js test",
+    "seed": "tsx scripts/seed.ts",
+    "typecheck": "tsc --noEmit",
+    "dev:live": "next dev --hostname 0.0.0.0 --port 3000 --experimental-https --experimental-https-key certificates/atlas-key.pem --experimental-https-cert certificates/atlas-cert.pem"
+  },
+  "dependencies": {
+    "@seliseblocks/client": "^0.2.0",
+    "lucide-react": "^1.55.0",
+    "next": "16.4.3",
+    "react": "19.3.0",
+    "react-dom": "19.3.0"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.64.0",
+    "@types/node": "^22.20.5",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^10.13.0",
+    "eslint-config-next": "16.4.3",
+    "tsx": "^4.23.15",
+    "typescript": "^5"
+  },
+  "engines": {
+    "node": ">=22.13.0"
+  },
+  "type": "module"
+}

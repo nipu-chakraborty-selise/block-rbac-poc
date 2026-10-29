@@ -1,0 +1,10 @@
+{
+  "verifiedAt": "2026-10-14T17:08:01.285Z",
+  "storage": "Blocks Data Gateway",
+  "anonymousDenied": true,
+  "uniqueOrganizationIndexEnforced": true,
+  "concurrentStaleWriteRejected": true,
+  "temporaryRecordsRemoved": true,
+  "businessRecordsMigrated": false,
+  "realMembershipsChanged": false
+}

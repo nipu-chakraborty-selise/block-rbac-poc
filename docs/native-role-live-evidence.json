@@ -1,0 +1,21 @@
+{
+  "verifiedAt": "2026-10-29T06:39:13.480Z",
+  "backendRoleReadVerified": true,
+  "roles": [
+    {
+      "slug": "clouduser",
+      "parentRoleSlug": null,
+      "canCreateOwn": true,
+      "protected": true
+    },
+    {
+      "slug": "atlas-data-backend",
+      "parentRoleSlug": null,
+      "canCreateOwn": false,
+      "protected": true
+    }
+  ],
+  "existingRoleHierarchyChanged": false,
+  "businessMembershipsChanged": false,
+  "liveRoleWritesPerformed": false
+}

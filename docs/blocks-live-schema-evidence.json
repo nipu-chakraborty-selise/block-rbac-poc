@@ -1,0 +1,842 @@
+{
+  "checkedOn": "2026-10-13",
+  "tenantId": "Daeef3775f1414219a348639860aa66f0",
+  "schemaCount": 9,
+  "schemas": [
+    {
+      "schemaName": "ApplicationAdminGrant",
+      "itemId": "a75a6ce2-d00f-4f78-b81f-ac42903255a0",
+      "schemaType": 1,
+      "querySchema": "ApplicationAdminGrants",
+      "mutationSchemas": [
+        "insertApplicationAdminGrant",
+        "updateApplicationAdminGrant",
+        "deleteApplicationAdminGrant"
+      ],
+      "fields": [
+        {
+          "name": "id",
+          "type": "ID",
+          "isArray": false
+        },
+        {
+          "name": "userId",
+          "type": "ID",
+          "isArray": false
+        },
+        {
+          "name": "grantedBy",
+          "type": "ID",
+          "isArray": false
+        },
+        {
+          "name": "createdAt",
+          "type": "DateTime",
+          "isArray": false
+        },
+        {
+          "name": "ItemId",
+          "type": "String",
+          "isArray": false
+        },
+        {
+          "name": "CreatedDate",
+          "type": "DateTime",
+          "isArray": false
+        },
+        {
+          "name": "LastUpdatedDate",
+          "type": "DateTime",
+          "isArray": false
+        },
+        {
+          "name": "CreatedBy",
+          "type": "String",
+          "isArray": false
+        },
+        {
+          "name": "Language",
+          "type": "String",
+          "isArray": false
+        },
+        {
+          "name": "LastUpdatedBy",
+          "type": "String",
+          "isArray": false
+        },
+        {
+          "name": "OrganizationId",
+          "type": "String",
+          "isArray": false
+        },
+        {
+          "name": "Tags",
+          "type": "String",
+          "isArray": true
+        }
+      ],
+      "access": {
+        "read": 3,
+        "write": 3,
+        "edit": 3,
+        "delete": 3
+      },
+      "allowPolicyCount": 0
+    },
+    {
+      "schemaName": "AuditEvent",
+      "itemId": "9b257add-e4b1-4428-8901-4cbb8cf37d81",
+      "schemaType": 1,
+      "querySchema": "AuditEvents",
+      "mutationSchemas": [
+        "insertAuditEvent",
+        "updateAuditEvent",
+        "deleteAuditEvent"
+      ],
+      "fields": [
+        {
+          "name": "id",
+          "type": "ID",
+          "isArray": false
+        },
+        {
+          "name": "countryOrganizationId",
+          "type": "ID",
+          "isArray": false
+        },
+        {
+          "name": "actorId",
+          "type": "ID",
+          "isArray": false
+        },
+        {
+          "name": "action",
+          "type": "String",
+          "isArray": false
+        },
+        {
+          "name": "scopeId",
+          "type": "ID",
+          "isArray": false
+        },
+        {
+          "name": "targetId",
+          "type": "ID",
+          "isArray": false
+        },
+        {
+          "name": "timestamp",
+          "type": "DateTime",
+          "isArray": false
+        },
+        {
+          "name": "ItemId",
+          "type": "String",
+          "isArray": false
+        },
+        {
+          "name": "CreatedDate",
+          "type": "DateTime",
+          "isArray": false
+        },
+        {
+          "name": "LastUpdatedDate",
+          "type": "DateTime",
+          "isArray": false
+        },
+        {
+          "name": "CreatedBy",
+          "type": "String",
+          "isArray": false
+        },
+        {
+          "name": "Language",
+          "type": "String",
+          "isArray": false
+        },
+        {
+          "name": "LastUpdatedBy",
+          "type": "String",
+          "isArray": false
+        },
+        {
+          "name": "OrganizationId",
+          "type": "String",
+          "isArray": false
+        },
+        {
+          "name": "Tags",
+          "type": "String",
+          "isArray": true
+        }
+      ],
+      "access": {
+        "read": 3,
+        "write": 3,
+        "edit": 3,
+        "delete": 3
+      },
+      "allowPolicyCount": 0
+    },
+    {
+      "schemaName": "CountryMetadata",
+      "itemId": "094dee62-1c64-4d65-be7c-c124a32583ee",
+      "schemaType": 1,
+      "querySchema": "CountryMetadatas",
+      "mutationSchemas": [
+        "insertCountryMetadata",
+        "updateCountryMetadata",
+        "deleteCountryMetadata"
+      ],
+      "fields": [
+        {
+          "name": "id",
+          "type": "ID",
+          "isArray": false
+        },
+        {
+          "name": "countryOrganizationId",
+          "type": "ID",
+          "isArray": false
+        },
+        {
+          "name": "countryCode",
+          "type": "String",
+          "isArray": false
+        },
+        {
+          "name": "displayName",
+          "type": "String",
+          "isArray": false
+        },
+        {
+          "name": "status",
+          "type": "String",
+          "isArray": false
+        },
+        {
+          "name": "ItemId",
+          "type": "String",
+          "isArray": false
+        },
+        {
+          "name": "CreatedDate",
+          "type": "DateTime",
+          "isArray": false
+        },
+        {
+          "name": "LastUpdatedDate",
+          "type": "DateTime",
+          "isArray": false
+        },
+        {
+          "name": "CreatedBy",
+          "type": "String",
+          "isArray": false
+        },
+        {
+          "name": "Language",
+          "type": "String",
+          "isArray": false
+        },
+        {
+          "name": "LastUpdatedBy",
+          "type": "String",
+          "isArray": false
+        },
+        {
+          "name": "OrganizationId",
+          "type": "String",
+          "isArray": false
+        },
+        {
+          "name": "Tags",
+          "type": "String",
+          "isArray": true
+        }
+      ],
+      "access": {
+        "read": 3,
+        "write": 3,
+        "edit": 3,
+        "delete": 3
+      },
+      "allowPolicyCount": 0
+    },
+    {
+      "schemaName": "DemoResource",
+      "itemId": "652494a7-b3d9-48d6-a7fb-7d60025c2b16",
+      "schemaType": 1,
+      "querySchema": "DemoResources",
+      "mutationSchemas": [
+        "insertDemoResource",
+        "updateDemoResource",
+        "deleteDemoResource"
+      ],
+      "fields": [
+        {
+          "name": "id",
+          "type": "ID",
+          "isArray": false
+        },
+        {
+          "name": "countryOrganizationId",
+          "type": "ID",
+          "isArray": false
+        },
+        {
+          "name": "departmentId",
+          "type": "ID",
+          "isArray": false
+        },
+        {
+          "name": "groupId",
+          "type": "ID",
+          "isArray": false
+        },
+        {
+          "name": "title",
+          "type": "String",
+          "isArray": false
+        },
+        {
+          "name": "content",
+          "type": "String",
+          "isArray": false
+        },
+        {
+          "name": "createdBy",
+          "type": "ID",
+          "isArray": false
+        },
+        {
+          "name": "ItemId",
+          "type": "String",
+          "isArray": false
+        },
+        {
+          "name": "CreatedDate",
+          "type": "DateTime",
+          "isArray": false
+        },
+        {
+          "name": "LastUpdatedDate",
+          "type": "DateTime",
+          "isArray": false
+        },
+        {
+          "name": "Language",
+          "type": "String",
+          "isArray": false
+        },
+        {
+          "name": "LastUpdatedBy",
+          "type": "String",
+          "isArray": false
+        },
+        {
+          "name": "OrganizationId",
+          "type": "String",
+          "isArray": false
+        },
+        {
+          "name": "Tags",
+          "type": "String",
+          "isArray": true
+        }
+      ],
+      "access": {
+        "read": 3,
+        "write": 3,
+        "edit": 3,
+        "delete": 3
+      },
+      "allowPolicyCount": 0
+    },
+    {
+      "schemaName": "Department",
+      "itemId": "52c4c0f5-230e-4658-a25b-58e6e9aea8bb",
+      "schemaType": 1,
+      "querySchema": "Departments",
+      "mutationSchemas": [
+        "insertDepartment",
+        "updateDepartment",
+        "deleteDepartment"
+      ],
+      "fields": [
+        {
+          "name": "id",
+          "type": "ID",
+          "isArray": false
+        },
+        {
+          "name": "countryOrganizationId",
+          "type": "ID",
+          "isArray": false
+        },
+        {
+          "name": "name",
+          "type": "String",
+          "isArray": false
+        },
+        {
+          "name": "status",
+          "type": "String",
+          "isArray": false
+        },
+        {
+          "name": "createdBy",
+          "type": "ID",
+          "isArray": false
+        },
+        {
+          "name": "createdAt",
+          "type": "DateTime",
+          "isArray": false
+        },
+        {
+          "name": "updatedAt",
+          "type": "DateTime",
+          "isArray": false
+        },
+        {
+          "name": "ItemId",
+          "type": "String",
+          "isArray": false
+        },
+        {
+          "name": "CreatedDate",
+          "type": "DateTime",
+          "isArray": false
+        },
+        {
+          "name": "LastUpdatedDate",
+          "type": "DateTime",
+          "isArray": false
+        },
+        {
+          "name": "Language",
+          "type": "String",
+          "isArray": false
+        },
+        {
+          "name": "LastUpdatedBy",
+          "type": "String",
+          "isArray": false
+        },
+        {
+          "name": "OrganizationId",
+          "type": "String",
+          "isArray": false
+        },
+        {
+          "name": "Tags",
+          "type": "String",
+          "isArray": true
+        }
+      ],
+      "access": {
+        "read": 3,
+        "write": 3,
+        "edit": 3,
+        "delete": 3
+      },
+      "allowPolicyCount": 0
+    },
+    {
+      "schemaName": "Group",
+      "itemId": "b5ea0fca-4409-4114-a80f-c8ab30f7beb3",
+      "schemaType": 1,
+      "querySchema": "Groups",
+      "mutationSchemas": [
+        "insertGroup",
+        "updateGroup",
+        "deleteGroup"
+      ],
+      "fields": [
+        {
+          "name": "id",
+          "type": "ID",
+          "isArray": false
+        },
+        {
+          "name": "countryOrganizationId",
+          "type": "ID",
+          "isArray": false
+        },
+        {
+          "name": "departmentId",
+          "type": "ID",
+          "isArray": false
+        },
+        {
+          "name": "name",
+          "type": "String",
+          "isArray": false
+        },
+        {
+          "name": "status",
+          "type": "String",
+          "isArray": false
+        },
+        {
+          "name": "createdBy",
+          "type": "ID",
+          "isArray": false
+        },
+        {
+          "name": "createdAt",
+          "type": "DateTime",
+          "isArray": false
+        },
+        {
+          "name": "updatedAt",
+          "type": "DateTime",
+          "isArray": false
+        },
+        {
+          "name": "ItemId",
+          "type": "String",
+          "isArray": false
+        },
+        {
+          "name": "CreatedDate",
+          "type": "DateTime",
+          "isArray": false
+        },
+        {
+          "name": "LastUpdatedDate",
+          "type": "DateTime",
+          "isArray": false
+        },
+        {
+          "name": "Language",
+          "type": "String",
+          "isArray": false
+        },
+        {
+          "name": "LastUpdatedBy",
+          "type": "String",
+          "isArray": false
+        },
+        {
+          "name": "OrganizationId",
+          "type": "String",
+          "isArray": false
+        },
+        {
+          "name": "Tags",
+          "type": "String",
+          "isArray": true
+        }
+      ],
+      "access": {
+        "read": 3,
+        "write": 3,
+        "edit": 3,
+        "delete": 3
+      },
+      "allowPolicyCount": 0
+    },
+    {
+      "schemaName": "Invitation",
+      "itemId": "cd8fec74-eb7c-4ee8-8c2b-687fba6b0542",
+      "schemaType": 1,
+      "querySchema": "Invitations",
+      "mutationSchemas": [
+        "insertInvitation",
+        "updateInvitation",
+        "deleteInvitation"
+      ],
+      "fields": [
+        {
+          "name": "id",
+          "type": "ID",
+          "isArray": false
+        },
+        {
+          "name": "countryOrganizationId",
+          "type": "ID",
+          "isArray": false
+        },
+        {
+          "name": "email",
+          "type": "String",
+          "isArray": false
+        },
+        {
+          "name": "scopeType",
+          "type": "String",
+          "isArray": false
+        },
+        {
+          "name": "scopeId",
+          "type": "ID",
+          "isArray": false
+        },
+        {
+          "name": "roleId",
+          "type": "ID",
+          "isArray": false
+        },
+        {
+          "name": "signupLinkId",
+          "type": "ID",
+          "isArray": false
+        },
+        {
+          "name": "invitedBy",
+          "type": "ID",
+          "isArray": false
+        },
+        {
+          "name": "status",
+          "type": "String",
+          "isArray": false
+        },
+        {
+          "name": "expiresAt",
+          "type": "DateTime",
+          "isArray": false
+        },
+        {
+          "name": "acceptedBy",
+          "type": "ID",
+          "isArray": false
+        },
+        {
+          "name": "acceptedAt",
+          "type": "DateTime",
+          "isArray": false
+        },
+        {
+          "name": "ItemId",
+          "type": "String",
+          "isArray": false
+        },
+        {
+          "name": "CreatedDate",
+          "type": "DateTime",
+          "isArray": false
+        },
+        {
+          "name": "LastUpdatedDate",
+          "type": "DateTime",
+          "isArray": false
+        },
+        {
+          "name": "CreatedBy",
+          "type": "String",
+          "isArray": false
+        },
+        {
+          "name": "Language",
+          "type": "String",
+          "isArray": false
+        },
+        {
+          "name": "LastUpdatedBy",
+          "type": "String",
+          "isArray": false
+        },
+        {
+          "name": "OrganizationId",
+          "type": "String",
+          "isArray": false
+        },
+        {
+          "name": "Tags",
+          "type": "String",
+          "isArray": true
+        }
+      ],
+      "access": {
+        "read": 3,
+        "write": 3,
+        "edit": 3,
+        "delete": 3
+      },
+      "allowPolicyCount": 0
+    },
+    {
+      "schemaName": "ScopeMembership",
+      "itemId": "f608378c-9012-4eb0-bba8-df14a59b3c3f",
+      "schemaType": 1,
+      "querySchema": "ScopeMemberships",
+      "mutationSchemas": [
+        "insertScopeMembership",
+        "updateScopeMembership",
+        "deleteScopeMembership"
+      ],
+      "fields": [
+        {
+          "name": "id",
+          "type": "ID",
+          "isArray": false
+        },
+        {
+          "name": "countryOrganizationId",
+          "type": "ID",
+          "isArray": false
+        },
+        {
+          "name": "userId",
+          "type": "ID",
+          "isArray": false
+        },
+        {
+          "name": "scopeType",
+          "type": "String",
+          "isArray": false
+        },
+        {
+          "name": "scopeId",
+          "type": "ID",
+          "isArray": false
+        },
+        {
+          "name": "roleId",
+          "type": "ID",
+          "isArray": false
+        },
+        {
+          "name": "status",
+          "type": "String",
+          "isArray": false
+        },
+        {
+          "name": "ItemId",
+          "type": "String",
+          "isArray": false
+        },
+        {
+          "name": "CreatedDate",
+          "type": "DateTime",
+          "isArray": false
+        },
+        {
+          "name": "LastUpdatedDate",
+          "type": "DateTime",
+          "isArray": false
+        },
+        {
+          "name": "CreatedBy",
+          "type": "String",
+          "isArray": false
+        },
+        {
+          "name": "Language",
+          "type": "String",
+          "isArray": false
+        },
+        {
+          "name": "LastUpdatedBy",
+          "type": "String",
+          "isArray": false
+        },
+        {
+          "name": "OrganizationId",
+          "type": "String",
+          "isArray": false
+        },
+        {
+          "name": "Tags",
+          "type": "String",
+          "isArray": true
+        }
+      ],
+      "access": {
+        "read": 3,
+        "write": 3,
+        "edit": 3,
+        "delete": 3
+      },
+      "allowPolicyCount": 0
+    },
+    {
+      "schemaName": "ScopedRole",
+      "itemId": "e811494a-b6cb-4015-a055-50ad91348130",
+      "schemaType": 1,
+      "querySchema": "ScopedRoles",
+      "mutationSchemas": [
+        "insertScopedRole",
+        "updateScopedRole",
+        "deleteScopedRole"
+      ],
+      "fields": [
+        {
+          "name": "id",
+          "type": "ID",
+          "isArray": false
+        },
+        {
+          "name": "countryOrganizationId",
+          "type": "ID",
+          "isArray": false
+        },
+        {
+          "name": "name",
+          "type": "String",
+          "isArray": false
+        },
+        {
+          "name": "permissions",
+          "type": "String",
+          "isArray": true
+        },
+        {
+          "name": "delegablePermissions",
+          "type": "String",
+          "isArray": true
+        },
+        {
+          "name": "ItemId",
+          "type": "String",
+          "isArray": false
+        },
+        {
+          "name": "CreatedDate",
+          "type": "DateTime",
+          "isArray": false
+        },
+        {
+          "name": "LastUpdatedDate",
+          "type": "DateTime",
+          "isArray": false
+        },
+        {
+          "name": "CreatedBy",
+          "type": "String",
+          "isArray": false
+        },
+        {
+          "name": "Language",
+          "type": "String",
+          "isArray": false
+        },
+        {
+          "name": "LastUpdatedBy",
+          "type": "String",
+          "isArray": false
+        },
+        {
+          "name": "OrganizationId",
+          "type": "String",
+          "isArray": false
+        },
+        {
+          "name": "Tags",
+          "type": "String",
+          "isArray": true
+        }
+      ],
+      "access": {
+        "read": 3,
+        "write": 3,
+        "edit": 3,
+        "delete": 3
+      },
+      "allowPolicyCount": 0
+    }
+  ]
+}

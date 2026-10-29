@@ -1,0 +1,51 @@
+{
+  "_meta": {
+    "cliVersion": "0.11.0",
+    "note": "Read-only snapshot written by 'blocks pull'. Editing it changes nothing; use the blocks <service> commands, then pull again.",
+    "pulledAt": "2026-10-29T08:27:46.325Z",
+    "readOnly": true,
+    "secretsRedacted": true,
+    "tenantId": "Daeef3775f1414219a348639860aa66f0",
+    "service": "iam"
+  },
+  "data": [
+    {
+      "name": "System User",
+      "slug": "clouduser",
+      "ancestorRoleSlugs": [],
+      "parentRoleSlug": null,
+      "canCreateOwn": true,
+      "description": "Default role assigned to cloud platform users. Grants the standard set of operational permissions needed to interact with tenant resources in the Blocks cloud environment.",
+      "count": 146,
+      "createdFromDefault": false,
+      "isArchived": false,
+      "itemId": "4d6f9ad6-e42d-4e0e-b095-3821e6ac4df5",
+      "createdDate": "2025-10-28T12:10:49.513Z",
+      "lastUpdatedDate": "2026-07-12T10:24:33.805Z",
+      "createdBy": "4cf50a2e-beb0-4c7a-8d16-68f99b511784",
+      "language": null,
+      "lastUpdatedBy": "4cf50a2e-beb0-4c7a-8d16-68f99b511784",
+      "organizationId": "default",
+      "tags": []
+    },
+    {
+      "name": "Atlas Data Backend",
+      "slug": "atlas-data-backend",
+      "ancestorRoleSlugs": [],
+      "parentRoleSlug": null,
+      "canCreateOwn": false,
+      "description": null,
+      "count": 146,
+      "createdFromDefault": false,
+      "isArchived": false,
+      "itemId": "53c1d127-bbba-4042-a467-1851fcfac06c",
+      "createdDate": "2026-10-13T05:11:01.393Z",
+      "lastUpdatedDate": "2026-10-13T05:11:01.393Z",
+      "createdBy": "4cf50a2e-beb0-4c7a-8d16-68f99b511784",
+      "language": null,
+      "lastUpdatedBy": "4cf50a2e-beb0-4c7a-8d16-68f99b511784",
+      "organizationId": "default",
+      "tags": []
+    }
+  ]
+}

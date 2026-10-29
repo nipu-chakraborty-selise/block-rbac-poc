@@ -1,0 +1,16 @@
+{
+  "checkedOn": "2026-10-29",
+  "cliVersion": "0.11.0",
+  "backendTestsPassed": 70,
+  "typecheckPassed": true,
+  "lintPassed": true,
+  "productionBuildPassed": true,
+  "liveRoleReadStatus": 200,
+  "nativePermissionDryRunPassed": true,
+  "livePermissionGrantApplied": true,
+  "nativeRoleWritesTestedLive": false,
+  "existingRoleHierarchyChanged": false,
+  "businessMembershipsChanged": false,
+  "nativeRolePanelBrowserFixturePassed": true,
+  "liveVerificationEvidence": "docs/native-role-live-evidence.json"
+}

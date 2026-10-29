@@ -1,0 +1,11 @@
+{
+  "verifiedAt": "2026-10-29T06:39:02.690Z",
+  "cliVersion": "0.11.0",
+  "backendRole": "atlas-data-backend",
+  "permissions": [
+    "blocks-iam::iam::roles",
+    "blocks-iam::iam::mutate-roles"
+  ],
+  "existingRolesChanged": false,
+  "businessUserAssignmentsChanged": false
+}

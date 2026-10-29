@@ -1,0 +1,14 @@
+{
+  "checkedAt": "2026-10-13T10:36:56.047Z",
+  "liveOidcStart": true,
+  "realProviderPasswordLogin": true,
+  "serverCallback": true,
+  "encryptedAppSession": true,
+  "superAdmin": true,
+  "countryCount": 3,
+  "replayedCallbackRejected": true,
+  "hostedBrowserLogin": true,
+  "browserCountryCount": 3,
+  "browserCallbackTokenExchangeRequests": 0,
+  "browserTestSignedOut": true
+}

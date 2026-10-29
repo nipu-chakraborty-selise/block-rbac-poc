@@ -1,0 +1,11 @@
+{
+  "schemaDefinitionItemId": "resolved-from-OrganizationRBACState",
+  "name": "unique_organization_rbac",
+  "isUnique": true,
+  "fields": [
+    {
+      "fieldName": "organizationKey",
+      "direction": "ASC"
+    }
+  ]
+}

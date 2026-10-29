@@ -1,0 +1,23 @@
+{
+  "schemaDefinitionItemId": "f608378c-9012-4eb0-bba8-df14a59b3c3f",
+  "name": "unique_scoped_membership",
+  "isUnique": true,
+  "fields": [
+    {
+      "fieldName": "userId",
+      "direction": "ASC"
+    },
+    {
+      "fieldName": "countryOrganizationId",
+      "direction": "ASC"
+    },
+    {
+      "fieldName": "scopeType",
+      "direction": "ASC"
+    },
+    {
+      "fieldName": "scopeId",
+      "direction": "ASC"
+    }
+  ]
+}

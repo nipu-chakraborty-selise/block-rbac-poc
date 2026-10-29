@@ -1,0 +1,28 @@
+{
+  "schemaName": "OrganizationRBACState",
+  "fields": [
+    "id",
+    "organizationKey",
+    "stateJson"
+  ],
+  "list": {
+    "query": "query getOrganizationRBACStates($input:DynamicQueryInput){getOrganizationRBACStates(input:$input){items{ItemId LastUpdatedDate id organizationKey stateJson} totalCount}}",
+    "operationName": "getOrganizationRBACStates",
+    "resultField": "getOrganizationRBACStates"
+  },
+  "create": {
+    "query": "mutation insertOrganizationRBACState($input:OrganizationRBACStateInsertInput){insertOrganizationRBACState(input:$input){acknowledged itemId message totalImpactedData}}",
+    "operationName": "insertOrganizationRBACState",
+    "resultField": "insertOrganizationRBACState"
+  },
+  "update": {
+    "query": "mutation updateOrganizationRBACState($filter:String,$where:OrganizationRBACStateFilterInput,$input:OrganizationRBACStateUpdateInput){updateOrganizationRBACState(filter:$filter,where:$where,input:$input){acknowledged itemId message totalImpactedData}}",
+    "operationName": "updateOrganizationRBACState",
+    "resultField": "updateOrganizationRBACState"
+  },
+  "delete": {
+    "query": "mutation deleteOrganizationRBACState($filter:String,$input:OrganizationRBACStateDeleteInput){deleteOrganizationRBACState(filter:$filter,input:$input){acknowledged itemId message totalImpactedData}}",
+    "operationName": "deleteOrganizationRBACState",
+    "resultField": "deleteOrganizationRBACState"
+  }
+}

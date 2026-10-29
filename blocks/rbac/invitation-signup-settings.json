@@ -1,0 +1,5 @@
+{
+  "isEmailPasswordSignUpEnabled": true,
+  "defaultRolesForNewUserOnSignUp": [],
+  "defaultPermissionsForNewUserOnSignUp": []
+}

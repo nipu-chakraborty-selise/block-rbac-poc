@@ -1,0 +1,64 @@
+{
+  "checkedAt": "2026-10-13T10:15:25.822Z",
+  "file": ".env.local",
+  "checks": [
+    {
+      "variable": "BLOCKS_PROJECT_KEY",
+      "status": "PASS",
+      "detail": "Matches the active CLI project tenant."
+    },
+    {
+      "variable": "BLOCKS_API_URL",
+      "status": "PASS",
+      "detail": "Matches the workspace Blocks API endpoint."
+    },
+    {
+      "variable": "BLOCKS_APP_DOMAIN",
+      "status": "PASS",
+      "detail": "HTTPS hostname matches live CLI project metadata."
+    },
+    {
+      "variable": "BLOCKS_OIDC_URL",
+      "status": "PASS",
+      "detail": "Matches the registered identity-provider discovery endpoint."
+    },
+    {
+      "variable": "BLOCKS_PUBLIC_CLIENT_ID",
+      "status": "PASS",
+      "detail": "Matches an active PKCE-enabled OIDC client."
+    },
+    {
+      "variable": "BLOCKS_BACKEND_CLIENT_ID",
+      "status": "PASS",
+      "detail": "Matches the backend machine credential and Data role."
+    },
+    {
+      "variable": "BLOCKS_BACKEND_CLIENT_SECRET",
+      "status": "PASS",
+      "detail": "Secret matches the live credential; value suppressed."
+    },
+    {
+      "variable": "SESSION_SECRET",
+      "status": "PASS",
+      "detail": "Valid 32-byte application encryption key; locally managed, not a Blocks CLI setting."
+    },
+    {
+      "variable": "APP_MODE",
+      "status": "PASS",
+      "detail": "Selects live Blocks storage and authentication."
+    },
+    {
+      "variable": "APP_ORIGIN",
+      "status": "PASS",
+      "detail": "HTTPS origin and callback/logout URLs match the live OIDC registration."
+    }
+  ],
+  "duplicateKeys": [],
+  "effectiveOverrides": [],
+  "filePermissions": "600",
+  "machineAuthentication": true,
+  "gatewayRead": true,
+  "localDomainResolves": true,
+  "certificateValid": true,
+  "warnings": []
+}

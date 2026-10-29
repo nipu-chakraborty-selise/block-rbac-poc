@@ -1,0 +1,129 @@
+{
+  "schemaId": "185940b2-21f6-4ee1-b14c-d905a9f7334e",
+  "accessLevels": {
+    "read": 3,
+    "write": 3,
+    "edit": 3,
+    "delete": 3
+  },
+  "policies": {
+    "isSuccess": true,
+    "message": null,
+    "httpStatusCode": 200,
+    "data": [
+      {
+        "itemId": "373dfb99-2348-4e2f-8c94-a3980687399b",
+        "policyName": "OrganizationRBACBackend-0",
+        "policyDescription": "Server-only Atlas Data Backend role; browser users must use authorized portal endpoints.",
+        "policyType": 0,
+        "operation": 0,
+        "entityName": "",
+        "fieldNames": [],
+        "schemaId": "185940b2-21f6-4ee1-b14c-d905a9f7334e",
+        "ruleGroup": {
+          "logicalOperator": 0,
+          "rules": [
+            {
+              "leftSource": 0,
+              "leftOperand": "roles",
+              "operator": 6,
+              "rightSource": 2,
+              "rightOperand": "",
+              "rightOperands": [],
+              "staticValue": "atlas-data-backend",
+              "description": null
+            }
+          ],
+          "nestedGroups": []
+        },
+        "priority": 1,
+        "isAllowPolicy": true
+      },
+      {
+        "itemId": "87dde501-517e-4ec5-a540-9af6d4da7658",
+        "policyName": "OrganizationRBACBackend-1",
+        "policyDescription": "Server-only Atlas Data Backend role; browser users must use authorized portal endpoints.",
+        "policyType": 0,
+        "operation": 1,
+        "entityName": "",
+        "fieldNames": [],
+        "schemaId": "185940b2-21f6-4ee1-b14c-d905a9f7334e",
+        "ruleGroup": {
+          "logicalOperator": 0,
+          "rules": [
+            {
+              "leftSource": 0,
+              "leftOperand": "roles",
+              "operator": 6,
+              "rightSource": 2,
+              "rightOperand": "",
+              "rightOperands": [],
+              "staticValue": "atlas-data-backend",
+              "description": null
+            }
+          ],
+          "nestedGroups": []
+        },
+        "priority": 1,
+        "isAllowPolicy": true
+      },
+      {
+        "itemId": "bdc77b2d-73ba-4e2e-b131-c6123f49fae4",
+        "policyName": "OrganizationRBACBackend-2",
+        "policyDescription": "Server-only Atlas Data Backend role; browser users must use authorized portal endpoints.",
+        "policyType": 0,
+        "operation": 2,
+        "entityName": "",
+        "fieldNames": [],
+        "schemaId": "185940b2-21f6-4ee1-b14c-d905a9f7334e",
+        "ruleGroup": {
+          "logicalOperator": 0,
+          "rules": [
+            {
+              "leftSource": 0,
+              "leftOperand": "roles",
+              "operator": 6,
+              "rightSource": 2,
+              "rightOperand": "",
+              "rightOperands": [],
+              "staticValue": "atlas-data-backend",
+              "description": null
+            }
+          ],
+          "nestedGroups": []
+        },
+        "priority": 1,
+        "isAllowPolicy": true
+      },
+      {
+        "itemId": "8cf51128-5048-4c16-9ed6-e73414976d79",
+        "policyName": "OrganizationRBACBackend-3",
+        "policyDescription": "Server-only Atlas Data Backend role; browser users must use authorized portal endpoints.",
+        "policyType": 0,
+        "operation": 3,
+        "entityName": "",
+        "fieldNames": [],
+        "schemaId": "185940b2-21f6-4ee1-b14c-d905a9f7334e",
+        "ruleGroup": {
+          "logicalOperator": 0,
+          "rules": [
+            {
+              "leftSource": 0,
+              "leftOperand": "roles",
+              "operator": 6,
+              "rightSource": 2,
+              "rightOperand": "",
+              "rightOperands": [],
+              "staticValue": "atlas-data-backend",
+              "description": null
+            }
+          ],
+          "nestedGroups": []
+        },
+        "priority": 1,
+        "isAllowPolicy": true
+      }
+    ],
+    "errors": []
+  }
+}

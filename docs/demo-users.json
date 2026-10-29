@@ -1,0 +1,92 @@
+{
+  "createdAt": "2026-10-14T17:23:56.926Z",
+  "storage": "Blocks OS IAM + Data Gateway",
+  "passwordLoginsVerified": true,
+  "replacedExampleAccounts": true,
+  "users": [
+    {
+      "name": "Amina Rahman",
+      "email": "atlas.bd.organization-admin@yopmail.com",
+      "organization": "Bangladesh",
+      "role": "organization-admin",
+      "unit": null
+    },
+    {
+      "name": "Karim Hasan",
+      "email": "atlas.bd.unit-admin@yopmail.com",
+      "organization": "Bangladesh",
+      "role": "unit-admin",
+      "unit": "Demo Team"
+    },
+    {
+      "name": "Farhana Akter",
+      "email": "atlas.bd.unit-user@yopmail.com",
+      "organization": "Bangladesh",
+      "role": "unit-user",
+      "unit": "Demo Team"
+    },
+    {
+      "name": "Rafi Ahmed",
+      "email": "atlas.bd.member@yopmail.com",
+      "organization": "Bangladesh",
+      "role": "member",
+      "unit": null
+    },
+    {
+      "name": "Sita Sharma",
+      "email": "atlas.np.organization-admin@yopmail.com",
+      "organization": "Nepal",
+      "role": "organization-admin",
+      "unit": null
+    },
+    {
+      "name": "Arjun Thapa",
+      "email": "atlas.np.unit-admin@yopmail.com",
+      "organization": "Nepal",
+      "role": "unit-admin",
+      "unit": "Demo Team"
+    },
+    {
+      "name": "Maya Gurung",
+      "email": "atlas.np.unit-user@yopmail.com",
+      "organization": "Nepal",
+      "role": "unit-user",
+      "unit": "Demo Team"
+    },
+    {
+      "name": "Bikash Rai",
+      "email": "atlas.np.member@yopmail.com",
+      "organization": "Nepal",
+      "role": "member",
+      "unit": null
+    },
+    {
+      "name": "Anna Weber",
+      "email": "atlas.de.organization-admin@yopmail.com",
+      "organization": "Germany",
+      "role": "organization-admin",
+      "unit": null
+    },
+    {
+      "name": "Lukas Fischer",
+      "email": "atlas.de.unit-admin@yopmail.com",
+      "organization": "Germany",
+      "role": "unit-admin",
+      "unit": "Demo Team"
+    },
+    {
+      "name": "Mia Schneider",
+      "email": "atlas.de.unit-user@yopmail.com",
+      "organization": "Germany",
+      "role": "unit-user",
+      "unit": "Demo Team"
+    },
+    {
+      "name": "Jonas Becker",
+      "email": "atlas.de.member@yopmail.com",
+      "organization": "Germany",
+      "role": "member",
+      "unit": null
+    }
+  ]
+}

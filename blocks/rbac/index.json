@@ -1,0 +1,11 @@
+{
+  "schemaDefinitionItemId": "185940b2-21f6-4ee1-b14c-d905a9f7334e",
+  "name": "unique_organization_rbac",
+  "isUnique": true,
+  "fields": [
+    {
+      "fieldName": "organizationKey",
+      "direction": "ASC"
+    }
+  ]
+}

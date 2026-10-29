@@ -1,0 +1,12 @@
+{
+  "_meta": {
+    "cliVersion": "0.11.0",
+    "note": "Read-only snapshot written by 'blocks pull'. Editing it changes nothing; use the blocks <service> commands, then pull again.",
+    "pulledAt": "2026-10-29T08:27:46.325Z",
+    "readOnly": true,
+    "secretsRedacted": true,
+    "tenantId": "Daeef3775f1414219a348639860aa66f0",
+    "service": "iam"
+  },
+  "data": []
+}

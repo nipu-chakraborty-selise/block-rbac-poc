@@ -1,0 +1,11 @@
+{
+  "schemaName": "OrganizationRBACState",
+  "indexName": "unique_organization_rbac",
+  "isUnique": true,
+  "fields": [
+    {
+      "fieldName": "organizationKey",
+      "direction": "ASC"
+    }
+  ]
+}

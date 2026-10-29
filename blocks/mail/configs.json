@@ -1,0 +1,40 @@
+{
+  "_meta": {
+    "cliVersion": "0.11.0",
+    "note": "Read-only snapshot written by 'blocks pull'. Editing it changes nothing; use the blocks <service> commands, then pull again.",
+    "pulledAt": "2026-10-29T08:27:46.325Z",
+    "readOnly": true,
+    "secretsRedacted": true,
+    "tenantId": "Daeef3775f1414219a348639860aa66f0",
+    "service": "mail"
+  },
+  "data": [
+    {
+      "name": "Default",
+      "host": "email-smtp.eu-central-1.amazonaws.com",
+      "port": 587,
+      "enableSSL": false,
+      "senderName": "Selise Blocks",
+      "senderAddress": "blocks@selise.io",
+      "senderUserName": "AKIAXJJI56KABNOQEWPT",
+      "accountPassword": "***",
+      "useDefaultCredentials": false,
+      "smtpClient": 0,
+      "isDefault": true,
+      "isInbound": false,
+      "provider": 0,
+      "isEnableSnsConfiguration": false,
+      "authenticationType": 0,
+      "securityMode": 0,
+      "isClientSecretConfigured": false,
+      "itemId": "ee01ceae-6332-4e83-b5f3-92a5abd9b326",
+      "createdDate": "2025-02-09T06:22:03.983Z",
+      "lastUpdatedDate": "2025-02-09T06:22:03.983Z",
+      "createdBy": "4cf50a2e-beb0-4c7a-8d16-68f99b511784",
+      "language": null,
+      "lastUpdatedBy": "4cf50a2e-beb0-4c7a-8d16-68f99b511784",
+      "organizationId": "default",
+      "tags": []
+    }
+  ]
+}

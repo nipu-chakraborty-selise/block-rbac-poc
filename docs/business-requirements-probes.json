@@ -1,0 +1,54 @@
+{
+  "checkedOn": "2026-10-14",
+  "scope": "Read-only audit; all behavior probes used isolated in-memory stores. No live records were mutated.",
+  "checks": [
+    {
+      "requirement": "Unit names unique within organization",
+      "expected": "Reject duplicate HRM",
+      "actual": "2 HRM departments accepted",
+      "conforms": false
+    },
+    {
+      "requirement": "Only Organization Admin renames units",
+      "expected": "Unit Admin denied",
+      "actual": "Department admin rename accepted",
+      "conforms": false
+    },
+    {
+      "requirement": "Only Organization Admin archives units",
+      "expected": "Unit Admin denied",
+      "actual": "Department admin archive accepted",
+      "conforms": false
+    },
+    {
+      "requirement": "Only Organization Admin appoints admins",
+      "expected": "Unit Admin cannot assign an admin role",
+      "actual": "Department admin assigned Department admin role to group member",
+      "conforms": false
+    },
+    {
+      "requirement": "Unit Admin removes regular users only",
+      "expected": "Removing another Unit Admin denied",
+      "actual": "Group admin removed another group admin",
+      "conforms": false
+    },
+    {
+      "requirement": "Organization Admin restores archived units",
+      "expected": "Restore available",
+      "actual": "Archived target rejected; no separate restore endpoint",
+      "conforms": false
+    },
+    {
+      "requirement": "Unassigned organization member gets no private content",
+      "expected": "Zero visible resources",
+      "actual": "0 resources",
+      "conforms": true
+    },
+    {
+      "requirement": "Organization separation",
+      "expected": "Bangladesh member denied Germany",
+      "actual": "Denied",
+      "conforms": true
+    }
+  ]
+}

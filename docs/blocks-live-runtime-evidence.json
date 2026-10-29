@@ -1,0 +1,13 @@
+{
+  "verifiedAt": "2026-10-13T06:09:08.520Z",
+  "storage": "Blocks Data Gateway",
+  "countries": 3,
+  "departments": 4,
+  "groups": 3,
+  "explicitAdmin": true,
+  "persistence": true,
+  "staleRevisionRejected": true,
+  "temporaryRecordDeleted": true,
+  "domainFlushVerified": true,
+  "anonymousDataDenied": true
+}

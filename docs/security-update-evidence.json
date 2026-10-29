@@ -1,0 +1,31 @@
+{
+  "checkedOn": "2026-10-29",
+  "next": "16.4.3",
+  "eslintConfigNext": "16.4.3",
+  "zodBefore": "4.6.5",
+  "zodAfter": "4.6.7",
+  "fixedAdvisory": "GHSA-mrhx-c7xc-m3w5",
+  "beforeVulnerabilities": {
+    "info": 0,
+    "low": 0,
+    "moderate": 0,
+    "high": 1,
+    "critical": 0
+  },
+  "afterVulnerabilities": {
+    "info": 0,
+    "low": 0,
+    "moderate": 0,
+    "high": 0,
+    "critical": 0
+  },
+  "backendTestsPassed": 70,
+  "typecheckPassed": true,
+  "lintPassed": true,
+  "productionBuildPassed": true,
+  "eslintPeerWarning": "Existing ESLint 10.13.0 exceeds the declared peer ranges of eslint-plugin-import, eslint-plugin-react and eslint-plugin-jsx-a11y; lint passes.",
+  "sources": [
+    "https://github.com/advisories/GHSA-mrhx-c7xc-m3w5",
+    "https://nextjs.org/blog/nextjs-security-update-october-14-2026"
+  ]
+}

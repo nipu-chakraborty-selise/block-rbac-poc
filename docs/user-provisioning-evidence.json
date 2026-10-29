@@ -1,0 +1,13 @@
+{
+  "checkedAt": "2026-10-13T12:28:02.274Z",
+  "permissionInServiceToken": false,
+  "existingCountryMemberResolved": true,
+  "liveAccountsCreated": 0,
+  "liveCountryGrantsPerformed": 0,
+  "remainingVerification": [
+    "new-account activation",
+    "country membership without IAM roles or permissions"
+  ],
+  "permissionAssignedCliReadBack": true,
+  "permissionClaimNote": "IAM service token did not enumerate the permission resource. Write-endpoint access remains unverified."
+}

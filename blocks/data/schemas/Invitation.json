@@ -1,0 +1,67 @@
+{
+  "schemaName": "Invitation",
+  "collectionName": "Invitation",
+  "schemaType": 1,
+  "fields": [
+    {
+      "name": "id",
+      "type": "ID",
+      "isArray": false
+    },
+    {
+      "name": "countryOrganizationId",
+      "type": "ID",
+      "isArray": false
+    },
+    {
+      "name": "email",
+      "type": "String",
+      "isArray": false
+    },
+    {
+      "name": "scopeType",
+      "type": "String",
+      "isArray": false
+    },
+    {
+      "name": "scopeId",
+      "type": "ID",
+      "isArray": false
+    },
+    {
+      "name": "roleId",
+      "type": "ID",
+      "isArray": false
+    },
+    {
+      "name": "signupLinkId",
+      "type": "ID",
+      "isArray": false
+    },
+    {
+      "name": "invitedBy",
+      "type": "ID",
+      "isArray": false
+    },
+    {
+      "name": "status",
+      "type": "String",
+      "isArray": false
+    },
+    {
+      "name": "expiresAt",
+      "type": "DateTime",
+      "isArray": false
+    },
+    {
+      "name": "acceptedBy",
+      "type": "ID",
+      "isArray": false
+    },
+    {
+      "name": "acceptedAt",
+      "type": "DateTime",
+      "isArray": false
+    }
+  ]
+}

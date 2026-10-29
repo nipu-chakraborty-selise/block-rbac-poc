@@ -1,0 +1,51 @@
+import env from '@next/env';
+import {execFileSync} from 'node:child_process';
+import {readFileSync,statSync,writeFileSync} from 'node:fs';
+import {X509Certificate} from 'node:crypto';
+import {lookup} from 'node:dns/promises';
+import {backendClient} from '../src/lib/blocks-runtime';
+import {liveRepository} from '../src/lib/live-workspace';
+const loaded=env.loadEnvConfig(process.cwd(),true),local=loaded.loadedEnvFiles.find(f=>f.path==='.env.local');
+if(!local)throw new Error('.env.local is missing.');
+const values=local.env;
+const cli=(process.env.BLOCKS_CLI||'blocks');
+const common=['--account','default','--project','Daeef3775f1414219a348639860aa66f0','--json'];
+function call(args:string[]){try{const data=JSON.parse(execFileSync(cli,[...args,...common],{encoding:'utf8',stdio:['ignore','pipe','pipe'],maxBuffer:4*1024*1024}));if(data.code||data.isSuccess===false)throw new Error();return data;}catch{throw new Error(`Read-only Blocks CLI check failed: ${args.slice(0,3).join(' ')}. Sensitive output suppressed.`);}}
+const project=call(['projects','get','Daeef3775f1414219a348639860aa66f0']).project;
+const registration=call(['auth','oidc-clients','get',values.BLOCKS_PUBLIC_CLIENT_ID||'']).oIDCClientCredential;
+const credentials=call(['auth','client-credentials','list']);
+const clients=Array.isArray(credentials)?credentials:credentials.data||credentials.clientCredentials||[];
+const backend=clients.find((c:Record<string,unknown>)=>(c.clientId||c.client_id||c.itemId)===values.BLOCKS_BACKEND_CLIENT_ID);
+const checks:{variable:string;status:'PASS'|'FAIL';detail:string}[]=[];
+const check=(variable:string,ok:unknown,detail:string)=>checks.push({variable,status:ok?'PASS':'FAIL',detail});
+const host=(value:unknown)=>{try{return new URL(String(value).startsWith('http')?String(value):`https://${value}`).hostname;}catch{return '';}};
+const origin=values.APP_ORIGIN||'',callback=`${origin}/login/callback`;
+check('BLOCKS_PROJECT_KEY',values.BLOCKS_PROJECT_KEY===project.tenantId&&!project.isDisabled,'Matches the active CLI project tenant.');
+const workspace=JSON.parse(readFileSync('blocks.json','utf8'));
+check('BLOCKS_API_URL',values.BLOCKS_API_URL===workspace.project.apiUrl&&values.BLOCKS_API_URL==='https://api.seliseblocks.com','Matches the workspace Blocks API endpoint.');
+const projectDomains=[project.customDomain,project.cookieDomain,...(project.applications||[]).flatMap((a:Record<string,unknown>)=>[a.domain,a.appDomain])].filter(Boolean).map(host);
+check('BLOCKS_APP_DOMAIN',projectDomains.includes(host(values.BLOCKS_APP_DOMAIN))&&(values.BLOCKS_APP_DOMAIN||'').startsWith('https://'),'HTTPS hostname matches live CLI project metadata.');
+check('BLOCKS_OIDC_URL',values.BLOCKS_OIDC_URL==='https://iam.seliseblocks.com'&&String(registration.externalDiscoveryEndpoint||'').startsWith(`${values.BLOCKS_OIDC_URL}/`),'Matches the registered identity-provider discovery endpoint.');
+check('BLOCKS_PUBLIC_CLIENT_ID',registration.clientId===values.BLOCKS_PUBLIC_CLIENT_ID&&registration.isActive===true&&registration.requirePkce===true,'Matches an active PKCE-enabled OIDC client.');
+check('BLOCKS_BACKEND_CLIENT_ID',!!backend&&backend.isActive!==false&&backend.active!==false&&backend.roles?.includes('atlas-data-backend'),'Matches the backend machine credential and Data role.');
+check('BLOCKS_BACKEND_CLIENT_SECRET',!!values.BLOCKS_BACKEND_CLIENT_SECRET&&!!backend&&(backend.clientSecret||backend.client_secret)===values.BLOCKS_BACKEND_CLIENT_SECRET,'Secret matches the live credential; value suppressed.');
+check('SESSION_SECRET',/^[a-f0-9]{64}$/i.test(values.SESSION_SECRET||''),'Valid 32-byte application encryption key; locally managed, not a Blocks CLI setting.');
+check('APP_MODE',values.APP_MODE==='live','Selects live Blocks storage and authentication.');
+check('APP_ORIGIN',(()=>{try{return new URL(origin).origin===origin&&new URL(origin).protocol==='https:'&&host(origin)===host(values.BLOCKS_APP_DOMAIN)&&registration.redirectUris.includes(callback)&&registration.postLogoutRedirectUris.includes(origin)}catch{return false}})(),'HTTPS origin and callback/logout URLs match the live OIDC registration.');
+const keys=local.contents.split(/\r?\n/).flatMap(line=>line.match(/^\s*(?:export\s+)?([A-Za-z_][A-Za-z0-9_]*)\s*=/)?.[1]||[]);
+const duplicateKeys=keys.filter((key,i)=>keys.indexOf(key)!==i);
+const effectiveOverrides=Object.keys(values).filter(key=>process.env[key]!==values[key]);
+const warnings:string[]=[];
+if(duplicateKeys.length)warnings.push(`Duplicate definitions: ${[...new Set(duplicateKeys)].join(', ')}`);
+if(effectiveOverrides.length)warnings.push(`Process overrides: ${effectiveOverrides.join(', ')}`);
+const mode=statSync('.env.local').mode&0o777;if(mode!==0o600)warnings.push('Environment file permissions differ from 0600.');
+const unknown=Object.keys(values).filter(key=>!checks.some(c=>c.variable===key));if(unknown.length)warnings.push(`Variables not consumed by the current app: ${unknown.join(', ')}`);
+let gatewayRead=false,machineAuthentication=false;
+if(checks.filter(c=>['BLOCKS_PROJECT_KEY','BLOCKS_API_URL','BLOCKS_BACKEND_CLIENT_ID','BLOCKS_BACKEND_CLIENT_SECRET'].includes(c.variable)).every(c=>c.status==='PASS')){try{machineAuthentication=!!await backendClient().auth.accessToken();await liveRepository().list('departments',{page:1,pageSize:1});gatewayRead=true;}catch{warnings.push('Live machine authentication or Gateway read failed; sensitive response suppressed.');}}
+let localDomainResolves=false;try{const addresses=await lookup(host(origin),{all:true});localDomainResolves=addresses.some(a=>a.address==='127.0.0.1'||a.address==='::1');}catch{}
+if(!localDomainResolves)warnings.push('The registered callback hostname does not resolve to localhost; a local hosts mapping is still required for browser login.');
+let certificateValid=false;try{const cert=new X509Certificate(readFileSync('certificates/atlas-cert.pem'));certificateValid=!!cert.checkHost(host(origin))&&Date.parse(cert.validTo)>Date.now();}catch{}
+if(!certificateValid)warnings.push('The local HTTPS certificate is missing, expired, or does not match the callback hostname.');
+const report={checkedAt:new Date().toISOString(),file:'.env.local',checks,duplicateKeys:[...new Set(duplicateKeys)],effectiveOverrides,filePermissions:mode.toString(8),machineAuthentication,gatewayRead,localDomainResolves,certificateValid,warnings};
+writeFileSync('docs/env-validation.json',JSON.stringify(report,null,2)+'\n');console.log(JSON.stringify(report,null,2));
+if(checks.some(c=>c.status==='FAIL'))process.exitCode=1;

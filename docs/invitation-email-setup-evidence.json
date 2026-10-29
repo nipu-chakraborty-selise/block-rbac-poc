@@ -1,0 +1,9 @@
+{
+  "appliedAt": "2026-10-29T08:38:08.290Z",
+  "sender": "blocks@selise.io",
+  "template": "AtlasUnitInvitation",
+  "emailPasswordSignupEnabled": true,
+  "defaultRoles": [],
+  "defaultPermissions": [],
+  "testEmailSent": false
+}
