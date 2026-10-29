@@ -1,9 +1,28 @@
 import {createBlocksClient, type BlocksAuthResponse} from '@seliseblocks/client';
 import {AppError} from './model';
-export function runtimeConfig(){const projectKey=process.env.BLOCKS_PROJECT_KEY,apiUrl=process.env.BLOCKS_API_URL;if(!projectKey||!apiUrl)throw new AppError(503,'Blocks project key and API URL are required.');return {projectKey,apiUrl,appDomain:process.env.BLOCKS_APP_DOMAIN,clientId:process.env.BLOCKS_PUBLIC_CLIENT_ID,oidcUrl:process.env.BLOCKS_OIDC_URL||'https://iam.seliseblocks.com',redirectUri:process.env.APP_ORIGIN?`${process.env.APP_ORIGIN}/login/callback`:undefined};}
+
+/** Dynamic lookup so Next does not inline these to undefined at `next build`. */
+function env(name:string){
+  return process.env[name];
+}
+
+export function runtimeConfig(){
+  const projectKey=env('BLOCKS_PROJECT_KEY');
+  const apiUrl=env('BLOCKS_API_URL');
+  if(!projectKey||!apiUrl)throw new AppError(503,'Blocks project key and API URL are required.');
+  const appOrigin=env('APP_ORIGIN');
+  return {
+    projectKey,
+    apiUrl,
+    appDomain:env('BLOCKS_APP_DOMAIN'),
+    clientId:env('BLOCKS_PUBLIC_CLIENT_ID'),
+    oidcUrl:env('BLOCKS_OIDC_URL')||'https://iam.seliseblocks.com',
+    redirectUri:appOrigin?`${appOrigin}/login/callback`:undefined,
+  };
+}
 export function tokens(response:BlocksAuthResponse){const data=response.data||{};const access=String(response.access_token||response.accessToken||data.access_token||data.accessToken||'');const refresh=String(response.refresh_token||response.refreshToken||data.refresh_token||data.refreshToken||'');if(response.error||!access)throw new AppError(401,'Blocks did not establish an authenticated token session.');return {access,refresh,expiresAt:Date.now()+Number(response.expires_in||response.expiresIn||300)*1000};}
 let serviceSession:{access:string;expiresAt:number}|undefined;
 let refreshing:Promise<string>|undefined;
-async function serviceToken(){if(serviceSession&&serviceSession.expiresAt>Date.now()+30000)return serviceSession.access;if(refreshing)return refreshing;refreshing=(async()=>{const config=runtimeConfig();const clientId=process.env.BLOCKS_BACKEND_CLIENT_ID,clientSecret=process.env.BLOCKS_BACKEND_CLIENT_SECRET;if(!clientId||!clientSecret)throw new AppError(503,'A server-only Blocks backend credential is required.');const client=createBlocksClient({apiUrl:config.apiUrl,xBlocksKey:config.projectKey});const response=await client.auth.form<BlocksAuthResponse>('/iam/v4/oidc/token',{grant_type:'client_credentials',client_id:clientId,client_secret:clientSecret,org_id:'default'});const token=tokens(response);serviceSession=token;return token.access;})();try{return await refreshing}finally{refreshing=undefined}}
+async function serviceToken(){if(serviceSession&&serviceSession.expiresAt>Date.now()+30000)return serviceSession.access;if(refreshing)return refreshing;refreshing=(async()=>{const config=runtimeConfig();const clientId=env('BLOCKS_BACKEND_CLIENT_ID'),clientSecret=env('BLOCKS_BACKEND_CLIENT_SECRET');if(!clientId||!clientSecret)throw new AppError(503,'A server-only Blocks backend credential is required.');const client=createBlocksClient({apiUrl:config.apiUrl,xBlocksKey:config.projectKey});const response=await client.auth.form<BlocksAuthResponse>('/iam/v4/oidc/token',{grant_type:'client_credentials',client_id:clientId,client_secret:clientSecret,org_id:'default'});const token=tokens(response);serviceSession=token;return token.access;})();try{return await refreshing}finally{refreshing=undefined}}
 export function backendClient(){const config=runtimeConfig();return createBlocksClient({apiUrl:config.apiUrl,xBlocksKey:config.projectKey,accessToken:serviceToken,onUnauthorized:()=>{serviceSession=undefined;return serviceToken()}})}
 export function userClient(access:string){const config=runtimeConfig();return createBlocksClient({apiUrl:config.apiUrl,xBlocksKey:config.projectKey,accessToken:access,appDomain:config.appDomain,oidc:config.clientId?{clientId:config.clientId,url:config.oidcUrl,redirectUri:config.redirectUri||(config.appDomain?`${config.appDomain}/login/callback`:undefined)}:undefined});}

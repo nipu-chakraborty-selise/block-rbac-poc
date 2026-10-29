@@ -38,13 +38,13 @@ export class BlocksRuntimeAdapters {
   }
 }
 export function mode() {
-  const value = process.env.APP_MODE || "mock";
+  const value = process.env["APP_MODE"] || "mock";
   if (value !== "mock" && value !== "live")
     throw new AppError(503, "APP_MODE must be mock or live.");
   return value;
 }
 export function mockDevelopment() {
-  return mode() === "mock" && process.env.NODE_ENV === "development";
+  return mode() === "mock" && process.env["NODE_ENV"] === "development";
 }
 export function requireMockRuntime() {
   if (mode() === "live")
