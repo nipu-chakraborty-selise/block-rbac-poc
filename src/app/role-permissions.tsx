@@ -1,3 +1,7 @@
+"use client";
+import {useState} from "react";
+import {Check, Minus, TableProperties} from "lucide-react";
+import {rolePermissions, type WorkspacePermissionPolicy, type WorkspacePermission} from "@/lib/rbac/permissions";
 const roleNames = [
   "Platform Super Admin",
   "Organization Owner",
@@ -21,14 +25,29 @@ const permissions = [
   ["Manage native Blocks IAM roles", "Yes", "No", "No", "No", "No", "No"],
 ];
 
-export default function RolePermissions({ legacyOrganization }: { legacyOrganization: boolean }) {
+const rowPermissions: Record<string, WorkspacePermission[]> = {
+  'Create units': ['createUnit'],
+  'Rename, archive or restore units': ['renameUnit','changeUnitStatus'],
+  'Invite or assign Unit Admins': ['inviteAdmins','manageAdmins'],
+  'Invite, add or remove regular Unit Members': ['inviteMembers','manageMembers'],
+  'Manage unit content in connected applications': ['manageContent'],
+};
+export default function RolePermissions({ legacyOrganization, policy, units }: { legacyOrganization: boolean; policy: WorkspacePermissionPolicy; units: {id:string;name:string}[] }) {
+  const [scope,setScope]=useState('');
+  const rows=[...permissions,['Manage unit content in connected applications','All units','Own company','Authorized units','Assigned units','No','No']].map(row=>{
+    const keys=rowPermissions[row[0]];if(!keys)return row;
+    const next=[...row];
+    for(const [index,role] of ['organization-admin','unit-admin','unit-user'].entries()) {
+      const grants=rolePermissions(policy,role as 'organization-admin'|'unit-admin'|'unit-user',scope||undefined);
+      const enabled=keys.filter(key=>(legacyOrganization&&role==='organization-admin')||grants[key]);
+      next[index+3]=enabled.length===0?'No':enabled.length===keys.length?(role==='organization-admin'?'Authorized units':role==='unit-admin'?'Assigned units':'Assigned units'):enabled.map(key=>key==='inviteMembers'||key==='inviteAdmins'?'Invite only':key==='manageMembers'||key==='manageAdmins'?'Manage assignments only':key==='renameUnit'?'Rename only':'Archive/restore only').join('; ');
+      if(row[0]==='Create units'&&enabled.length)next[index+3]='Yes; automatically authorized';
+    }
+    return next;
+  });
   return (
-    <section aria-labelledby="role-permissions-heading">
-      <h2 id="role-permissions-heading">Permissions by role</h2>
-      <p className="rbac-note">
-        Organization Admins manage owner-authorized units and units they create.
-        A person can have different roles in different units. Membership alone grants no unit access.
-      </p>
+    <section className="role-comparison" aria-labelledby="role-permissions-heading">
+      <header className="role-section-heading"><div className="role-section-icon"><TableProperties size={20} aria-hidden="true"/></div><div><span className="role-eyebrow">ACCESS OVERVIEW</span><h2 id="role-permissions-heading">Permissions by role</h2><p>Compare the current permissions across every role.</p></div><span className="role-scope-tag">6 access levels</span></header>
       {legacyOrganization && (
         <p className="rbac-alert" role="note">
           This organization has no recorded owner. Its Organization Admins retain
@@ -36,21 +55,22 @@ export default function RolePermissions({ legacyOrganization }: { legacyOrganiza
           Organization invitations, ownership transfer and workspace removal still require an owner or platform Super Admin.
         </p>
       )}
+      <div className="role-comparison-toolbar"><label>Permission comparison scope <select value={scope} onChange={e=>setScope(e.target.value)}><option value="">Company defaults</option>{units.map(u=><option key={u.id} value={u.id}>{u.name}</option>)}</select></label><p><span className="role-legend-yes"><Check size={13} aria-hidden="true"/>Allowed within scope</span><span><Minus size={13} aria-hidden="true"/>Not permitted</span></p></div>
       <div className="rbac-panel rbac-permissions-scroll" role="region" aria-label="Role permissions comparison" tabIndex={0}>
         <table aria-label="Role permissions">
-          <caption>Permissions for companies with an Organization Owner</caption>
+          <caption>Current role permissions · {units.find(u=>u.id===scope)?.name||"Company defaults"}</caption>
           <thead><tr><th scope="col">Permission</th>{roleNames.map(role => <th scope="col" key={role}>{role}</th>)}</tr></thead>
-          <tbody>{permissions.map(([permission, ...values]) => (
+          <tbody>{rows.map(([permission, ...values]) => (
             <tr key={permission}>
               <th scope="row">{permission}</th>
-              {values.map((value, index) => <td key={roleNames[index]}>{value}</td>)}
+              {values.map((value, index) => <td key={roleNames[index]}><span className={value==='No'?'role-cell-denied':'role-cell-allowed'}>{value==='No'?<Minus size={13} aria-hidden="true"/>:<Check size={13} aria-hidden="true"/>}{value}</span></td>)}
             </tr>
           ))}</tbody>
         </table>
       </div>
       <p className="rbac-note">
         Verified signup followed by company creation grants Organization Owner for that company.
-        Unit Admins cannot appoint or remove admins. Archived units cannot be used until restored.
+        Unit Admins cannot appoint or remove admins. Archived units cannot be used until restored. Management actions also depend on the permission settings shown above.
         Document, template and contract permissions are enforced by the separate application.
       </p>
     </section>

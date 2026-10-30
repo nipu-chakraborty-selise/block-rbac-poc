@@ -1,4 +1,5 @@
 import { AppError } from "../model";
+import {validPermissionPolicy} from './permissions';
 import {
   BlocksDataRepository,
   type GatewayCollectionContract,
@@ -39,7 +40,7 @@ export function validateState(
   )
     throw new AppError(503, "Invalid organization RBAC state.");
   if (
-    s.units.some(
+    !validPermissionPolicy(s.permissionPolicy, s.units.map(u => u.id)) || s.units.some(
       (u) =>
         typeof u.id !== "string" ||
         typeof u.name !== "string" ||

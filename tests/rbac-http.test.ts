@@ -4,6 +4,7 @@ import { rbacHandler } from "../src/lib/rbac/http";
 import { handle, application } from "../src/lib/http";
 import { POST as retired } from "../src/app/api/[[...path]]/route";
 import {PROJECT_ID} from "../src/lib/seed";
+import {defaultPermissions} from '../src/lib/rbac/permissions';
 const request = (
   path: string,
   method = "GET",
@@ -262,4 +263,32 @@ test("HTTP revisions protect concurrent updates and the last Organization Admin"
     current.units.filter((u: { name: string }) => u.name === name).length,
     1,
   );
+});
+
+test('Workspace permission API enforces owner scope, lower-role delegation, CAS and effective content grants',async()=>{
+ const app=application();
+ app.store.put('users',{id:'permission-owner',name:'Permission owner',email:'permissions@demo.local',verified:true,projectId:PROJECT_ID,countryIds:[]});
+ const owner=await login('permission-owner');
+ const company=await (await call('organizations','POST',{name:'Permission company'},owner)).json();
+ const base=`organizations/${company.id}`;
+ const snapshot=async(cookie=owner)=>(await call(base,'GET',undefined,cookie)).json();
+ let state=await snapshot();
+ const unit=await (await call(`${base}/units`,'POST',{name:'Scoped unit',revision:state.revision},owner)).json();
+ app.store.put('users',{id:'permission-admin',name:'Permission admin',email:'permission-admin@demo.local',verified:true,projectId:PROJECT_ID,countryIds:[company.id]});
+ state=await snapshot();
+ assert.equal((await call(`${base}/members`,'POST',{userId:'permission-admin',role:'organization-admin',managedUnitIds:[unit.id],revision:state.revision},owner)).status,200);
+ const admin=await login('permission-admin');state=await snapshot();
+ const body={role:'organization-admin',permissions:{...defaultPermissions('organization-admin'),createUnit:false,manageContent:false},revision:state.revision};
+ assert.equal((await call(`${base}/permissions`,'PATCH',body,admin)).status,403);
+ assert.equal((await call(`${base}/permissions`,'PATCH',body,owner)).status,200);
+ assert.equal((await call(`${base}/permissions`,'PATCH',body,owner)).status,409);
+ state=await snapshot(admin);assert.equal(state.canCreateUnit,false);
+ assert.equal((await call(`${base}/units`,'POST',{name:'Denied unit',revision:state.revision},admin)).status,403);
+ assert.equal((await call(`${base}/permissions`,'PATCH',{role:'unit-admin',unitId:unit.id,permissions:defaultPermissions('unit-admin'),revision:state.revision},admin)).status,403);
+ assert.equal((await call(`${base}/permissions`,'PATCH',{role:'unit-admin',unitId:unit.id,permissions:{...defaultPermissions('unit-admin'),manageContent:false},revision:state.revision},admin)).status,200);
+ const access=await (await call(`${base}/access?unitId=${encodeURIComponent(unit.id)}`,'GET',undefined,admin)).json();
+ assert.equal(access.canManageUnitContent,false);
+ assert.equal(access.permissions.manageContent,false);
+ const outsider=await login('germany-admin');
+ assert.equal((await call(`${base}/permissions`,'PATCH',{...body,revision:(await snapshot()).revision},outsider)).status,403);
 });

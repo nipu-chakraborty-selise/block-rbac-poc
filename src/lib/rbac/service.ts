@@ -1,3 +1,4 @@
+import {rolePermissions, editableRoles, permissionKeys, validGrants, type EditableRole, type WorkspacePermission} from './permissions';
 import { createHash, randomBytes, randomUUID } from "node:crypto";
 import { AppError } from "../model";
 import { type OrganizationState, type Identity } from "./model";
@@ -95,6 +96,39 @@ export class Rbac {
       left.length === right.length && left.every((id, index) => id === right[index])
     );
   }
+  permissions(role: EditableRole, unitId?: string) {
+    return rolePermissions(this.state.permissionPolicy, role, unitId);
+  }
+  can(permission: WorkspacePermission, unitId?: string): boolean {
+    if (this.canManageOrganization()) return true;
+    if (permission === 'createUnit') return this.organizationAdmin() && this.permissions('organization-admin').createUnit;
+    if (!unitId) return false;
+    if (this.canManageUnit(unitId)) return this.permissions('organization-admin')[permission];
+    const role = this.state.assignments.find(a => a.userId === this.actor.id && a.unitId === unitId && a.status === 'active')?.role;
+    return !!role && this.permissions(role, unitId)[permission];
+  }
+  requirePermission(permission: WorkspacePermission, unitId?: string) {
+    this.country();
+    if (unitId) this.unit(unitId, permission === 'renameUnit' || permission === 'changeUnitStatus');
+    if (!this.can(permission, unitId)) throw new AppError(403, 'Your workspace role does not permit this action.');
+  }
+  updatePermissions(body: Record<string, unknown>) {
+    this.country();
+    if (body.unitId !== undefined && typeof body.unitId !== "string") throw new AppError(422, "Choose a valid unit scope.");
+    const role = body.role as EditableRole;
+    const unitId = typeof body.unitId === 'string' && body.unitId ? body.unitId : undefined;
+    if (!editableRoles.includes(role) || !validGrants(body.permissions, role)) throw new AppError(422, 'Choose a workspace role and valid permissions within its hierarchy.');
+    if (unitId) this.unit(unitId, true);
+    if (!this.actor.superAdmin && !this.companyOwner()) {
+      if (!this.organizationAdmin() || !unitId || role === 'organization-admin' || !this.canManageUnit(unitId)) throw new AppError(403, 'Only a parent role can edit lower-role permissions within authorized units.');
+      for (const key of permissionKeys) if (body.permissions[key] && !this.can(key, unitId)) throw new AppError(403, 'You cannot delegate a permission you do not have.');
+    }
+    if (unitId && role === 'organization-admin') throw new AppError(422, 'Organization Admin permissions are configured at organization scope.');
+    const policy = this.state.permissionPolicy ||= {};
+    const target = unitId ? ((policy.units ||= {})[unitId] ||= {}) : (policy.roles ||= {});
+    target[role] = {...body.permissions};
+    this.event('role.permissions-changed', `${unitId || this.state.organizationId}:${role}`);
+  }
   requireUnitManager(id:string) {
     this.unit(id,true);
     if(!this.canManageUnit(id))throw new AppError(403,"Organization Admin required to manage this unit.");
@@ -157,7 +191,7 @@ export class Rbac {
       .filter(
         (u) =>
           this.canManageUnit(u.id) ||
-          (u.status === "active" &&
+          ((u.status === "active" || this.can("renameUnit",u.id) || this.can("changeUnitStatus",u.id)) &&
             this.state.assignments.some(
               (m) =>
                 m.userId === this.actor.id &&
@@ -172,7 +206,8 @@ export class Rbac {
             ? "organization-owner"
             : u.status === "active"
               ? this.unitRole(u.id)
-              : "organization-admin",
+              : this.canManageUnit(u.id) ? "organization-admin" : this.state.assignments.find(a=>a.userId===this.actor.id && a.unitId===u.id && a.status==="active")?.role,
+        permissions: Object.fromEntries(permissionKeys.map(key => [key, this.can(key, u.id)])) as import("./permissions").PermissionGrants,
         canManage:
           this.canManageUnit(u.id) ||
           (u.status === "active" && this.unitRole(u.id) === "unit-admin"),
@@ -183,7 +218,7 @@ export class Rbac {
         m.status === "active" &&
         ids.has(m.unitId) &&
         (this.canManageUnit(m.unitId) ||
-          this.unitRole(m.unitId) === "unit-admin" ||
+          units.some(u=>u.id===m.unitId && u.role==="unit-admin") ||
           m.userId === this.actor.id),
     );
     const visibleUsers = new Set(assignments.map((m) => m.userId));
@@ -194,7 +229,10 @@ export class Rbac {
       layerLabel: this.state.layerLabel,
       organizationAdmin: this.organizationAdmin(),
       canManageOrganization: admin,
-      canCreateUnit: this.organizationAdmin(),
+      canCreateUnit: this.can("createUnit"),
+      permissionPolicy: {roles: this.state.permissionPolicy?.roles, units: Object.fromEntries(Object.entries(this.state.permissionPolicy?.units || {}).filter(([id]) => ids.has(id)))},
+      canEditRolePermissions: this.organizationAdmin(),
+      canConfigureCompanyPermissions: this.actor.superAdmin || this.companyOwner(),
       effectiveRole: this.companyOwner()?"organization-owner":this.orgMember()?.role||"member",
       superAdmin: this.actor.superAdmin,
       companyOwner: this.companyOwner(),
@@ -241,8 +279,7 @@ export class Rbac {
     this.event("organization.settings-changed", this.state.organizationId);
   }
   saveUnit(id: string | undefined, b: Record<string, unknown>) {
-    this.requireAdmin();
-    if(id)this.requireUnitManager(id);
+    this.requirePermission(id ? "renameUnit" : "createUnit", id);
     const name = text(b.name, "Unit name");
     if (
       this.state.units.some(
@@ -280,7 +317,7 @@ export class Rbac {
     return { id };
   }
   statusUnit(id: string, status: "active" | "archived") {
-    this.requireUnitManager(id);
+    this.requirePermission("changeUnitStatus", id);
     this.unit(id, true).status = status;
     this.event(status === "active" ? "unit.restored" : "unit.archived", id);
   }
@@ -416,8 +453,9 @@ export class Rbac {
         i.status = "revoked";
     this.event("organization.member-removed", userId);
   }
-  assign(target: Identity, unitId: string, role: unknown) {
+  assign(target: Identity, unitId: string, role: unknown, fromInvitation = false) {
     this.requireUnitAdmin(unitId);
+    this.requirePermission(role === "unit-admin" ? (fromInvitation ? "inviteAdmins" : "manageAdmins") : (fromInvitation ? "inviteMembers" : "manageMembers"), unitId);
     this.validateTarget(target);
     if (role !== "unit-admin" && role !== "unit-user")
       throw new AppError(422, "Choose Unit Admin or Unit Member.");
@@ -439,6 +477,7 @@ export class Rbac {
         403,
         "Unit Admins can manage regular Unit Members only.",
       );
+    if (old?.status === "active" && old.role === "unit-admin") this.requirePermission("manageAdmins", unitId);
     if (old) {
       old.role = role;
       old.status = "active";
@@ -458,6 +497,7 @@ export class Rbac {
         m.userId === userId && m.unitId === unitId && m.status === "active",
     );
     if (!old) throw new AppError(404, "Unit membership not found.");
+    this.requirePermission(old.role === "unit-admin" ? "manageAdmins" : "manageMembers", unitId);
     if (
       !this.organizationAdmin() &&
       (old.role === "unit-admin" ||
@@ -481,6 +521,7 @@ export class Rbac {
   }
   invite(target: Identity | { email: string }, unitId: string, role: unknown) {
     this.requireUnitAdmin(unitId);
+    this.requirePermission(role === "unit-admin" ? "inviteAdmins" : "inviteMembers", unitId);
     if("id" in target && (!target.active || !target.verified))
       throw new AppError(422,"Choose an active, verified Blocks account.");
     const recipientId="id" in target?target.id:"";
@@ -603,6 +644,7 @@ export class Rbac {
       this.event("invitation.accepted",id);return {alreadyAccepted:false};
     }
     issuing.requireUnitAdmin(i.unitId);
+    issuing.requirePermission(i.role === "unit-admin" ? "inviteAdmins" : "inviteMembers", i.unitId);
     if (!issuing.organizationAdmin() && i.role !== "unit-user")
       throw new AppError(
         403,
@@ -617,7 +659,7 @@ export class Rbac {
       else {member={userId:this.actor.id,role:"member",status:"active"};this.state.members.push(member);}
       this.event("organization.member-added",this.actor.id);
     }
-    issuing.assign({...this.actor,organizationIds:[...new Set([...this.actor.organizationIds,this.state.organizationId])]}, i.unitId, i.role);
+    issuing.assign({...this.actor,organizationIds:[...new Set([...this.actor.organizationIds,this.state.organizationId])]}, i.unitId, i.role, true);
     i.status = "accepted";
     i.recipientId = this.actor.id;
     i.acceptedBy = this.actor.id;

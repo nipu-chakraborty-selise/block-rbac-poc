@@ -324,14 +324,17 @@ test("RBAC workspace fits desktop and mobile and exposes owner and scoped busine
     .click();
   for (const name of ["Organization Owner", "Organization Admin", "Unit Admin", "Unit Member"])
     await expect(
-      page.getByRole("heading", { name, exact: true }),
+      page.getByRole("heading", { name, exact: true, level:2 }),
     ).toBeVisible();
-  await page.setViewportSize({ width: 390, height: 844 });
+  await page.screenshot({path:"docs/role-management-desktop.png",fullPage:true});
+  await page.emulateMedia({reducedMotion:"reduce"});
+  await page.setViewportSize({ width: 375, height: 844 });
   expect(
     await page.evaluate(
       () => document.documentElement.scrollWidth <= innerWidth,
     ),
   ).toBe(true);
+  await page.screenshot({path:"docs/role-management-mobile.png",fullPage:true});
   await page.getByRole("button", { name: "Units", exact: true }).click();
   await page.screenshot({ path: "docs/rbac-mobile.png", fullPage: true });
   expect(
@@ -401,4 +404,44 @@ test("A verified ordinary account creates its company and becomes only that comp
  expect((await page.request.get("/api/rbac/organizations/de")).status()).toBe(403);
  await page.getByRole("button",{name:"Organizations",exact:true}).click();
  await expect(company).toBeVisible();
+});
+
+test('Workspace permission saves persist and revoke actions for existing Unit Admins',async({page})=>{
+ await enter(page);
+ await page.getByRole('button',{name:'Roles & access',exact:true}).click();
+ let editor=page.getByRole('form',{name:'Workspace permission editor'});
+ await editor.getByRole('combobox',{name:'Permission role',exact:true}).selectOption('unit-admin');
+ await editor.getByRole('combobox',{name:'Permission scope',exact:true}).selectOption({label:'HRM'});
+ await expect(editor.getByRole('button',{name:'Reset',exact:true})).toBeDisabled();
+ await editor.getByRole('checkbox',{name:'Rename units',exact:true}).focus();
+ await page.keyboard.press('Space');
+ await expect(editor.getByText('1 unsaved change',{exact:true})).toBeVisible();
+ await editor.getByRole('button',{name:'Reset',exact:true}).click();
+ await expect(editor.getByRole('checkbox',{name:'Rename units',exact:true})).not.toBeChecked();
+ await editor.getByRole('checkbox',{name:'Invite Unit Members',exact:true}).uncheck();
+ await editor.getByRole('checkbox',{name:'Rename units',exact:true}).check();
+ await editor.getByRole('button',{name:'Save workspace permissions',exact:true}).click();
+ await expect(page.getByRole('status')).toContainText('Workspace permissions saved');
+ await page.reload();
+ await page.getByRole('button',{name:/Bangladesh.*Open organization/}).click();
+ await page.getByRole('button',{name:'Roles & access',exact:true}).click();
+ editor=page.getByRole('form',{name:'Workspace permission editor'});
+ await editor.getByRole('combobox',{name:'Permission role',exact:true}).selectOption('unit-admin');
+ await editor.getByRole('combobox',{name:'Permission scope',exact:true}).selectOption({label:'HRM'});
+ await expect(editor.getByRole('checkbox',{name:'Invite Unit Members',exact:true})).not.toBeChecked();
+ await page.getByRole('combobox',{name:'Demo identity',exact:true}).selectOption('recruit-admin');
+ await page.getByRole('button',{name:/Bangladesh.*Open organization/}).click();
+ await expect(page.getByRole('button',{name:'Rename HRM',exact:true})).toBeVisible();
+ await openUnit(page,'HRM');
+ await expect(page.getByRole('button',{name:'Invite member',exact:true})).toHaveCount(0);
+ await expect(page.getByRole('button',{name:'Add unit member',exact:true})).toBeVisible();
+ const org=await (await page.request.get('/api/rbac/organizations/bd')).json();
+ const unit=org.units.find((u:{name:string})=>u.name==='HRM');
+ const denied=await page.request.post('/api/rbac/organizations/bd/invitations',{headers:{origin:'http://127.0.0.1:3100'},data:{revision:org.revision,unitId:unit.id,role:'unit-user',email:'denied@demo.local'}});
+ expect(denied.status()).toBe(403);
+ await page.getByRole('button',{name:'Roles & access',exact:true}).click();
+ await expect(page.getByRole('form',{name:'Workspace permission editor'})).toHaveCount(0);
+ await page.getByRole('combobox',{name:'Permission comparison scope',exact:true}).selectOption({label:'HRM'});
+ const row=page.getByRole('table',{name:'Role permissions',exact:true}).getByRole('row').filter({has:page.getByRole('rowheader',{name:'Invite, add or remove regular Unit Members',exact:true})});
+ await expect(row).toContainText('Manage assignments only');
 });

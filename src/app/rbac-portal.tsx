@@ -21,6 +21,8 @@ import type { Identity, Organization } from "@/lib/rbac/model";
 import type { Rbac } from "@/lib/rbac/service";
 import NativeRolePanel from './native-role-panel';
 import RolePermissions from './role-permissions';
+import WorkspacePermissionEditor from './workspace-permission-editor';
+import RoleOverview from './role-overview';
 type Workspace = ReturnType<Rbac["snapshot"]> & {
   initialized: true;
   revision: string;
@@ -316,7 +318,8 @@ export default function RbacPortal() {
           ? "member"
           : d.kind === "member"
             ? "member"
-            : "unit-user"),
+            : d.unitId && workspace && !workspace.units.find(u=>u.id===d.unitId)?.permissions[d.kind==='invite'?'inviteMembers':'manageMembers']
+              ? 'unit-admin' : "unit-user"),
     );
     const existing =
       d.userId && workspace
@@ -872,13 +875,13 @@ export default function RbacPortal() {
                       </button>
                     )}
                     </>}
-                    <button
+                    {workspace.canCreateUnit && <button
                       className="button primary"
                       onClick={() => show({ kind: "unit" })}
                     >
                       <Plus size={17} />
                       Create unit
-                    </button>
+                    </button>}
                   </>
                 )}
                 {view === "members" && organizationManager && (
@@ -897,7 +900,7 @@ export default function RbacPortal() {
                   unit?.status === "active" &&
                   unit.canManage && (
                     <>
-                      <button
+                      {(unit.permissions.inviteMembers||unit.permissions.inviteAdmins)&&<button
                         className="button secondary"
                         onClick={() =>
                           show({ kind: "invite", unitId: unit.id })
@@ -905,8 +908,8 @@ export default function RbacPortal() {
                       >
                         <Mail size={17} />
                         Invite member
-                      </button>
-                      <button
+                      </button>}
+                      {(unit.permissions.manageMembers||unit.permissions.manageAdmins)&&<button
                         className="button primary"
                         onClick={() =>
                           show({ kind: "assignment", unitId: unit.id })
@@ -914,7 +917,7 @@ export default function RbacPortal() {
                       >
                         <Plus size={17} />
                         Add unit member
-                      </button>
+                      </button>}
                     </>
                   )}
               </div>
@@ -969,17 +972,17 @@ export default function RbacPortal() {
                           >
                             Open unit <ArrowUpRight size={16} />
                           </button>
-                          {u.canManage && organizationAdmin && (
+                          {(u.permissions.renameUnit||u.permissions.changeUnitStatus) && (
                             <>
-                              <button
+                              {u.permissions.renameUnit&&<button
                                 aria-label={`Rename ${u.name}`}
                                 onClick={() =>
                                   show({ kind: "unit", id: u.id, name: u.name })
                                 }
                               >
                                 <Settings2 size={17} />
-                              </button>
-                              <button
+                              </button>}
+                              {u.permissions.changeUnitStatus&&<button
                                 aria-label={`${u.status === "active" ? "Archive" : "Restore"} ${u.name}`}
                                 onClick={() =>
                                   show({
@@ -1003,7 +1006,7 @@ export default function RbacPortal() {
                                 ) : (
                                   <RotateCcw size={17} />
                                 )}
-                              </button>
+                              </button>}
                             </>
                           )}
                         </div>
@@ -1066,7 +1069,7 @@ export default function RbacPortal() {
                                 </span>
                               </td>
                               <td>
-                                {unit.canManage &&
+                                {(m.role === "unit-admin" ? unit.permissions.manageAdmins : unit.permissions.manageMembers) &&
                                   (organizationAdmin ||
                                     (m.role === "unit-user" &&
                                       directory.find((u) => u.id === m.userId)
@@ -1086,7 +1089,7 @@ export default function RbacPortal() {
                                       Remove
                                     </button>
                                   )}
-                                {organizationAdmin && (
+                                {organizationAdmin && (m.role === "unit-admin" ? unit.permissions.manageAdmins : unit.permissions.manageMembers) && (
                                   <button
                                     onClick={() =>
                                       show({
@@ -1247,66 +1250,19 @@ export default function RbacPortal() {
               </>
             )}
             {view === "roles" && (
-              <>
-                {actor.superAdmin&&!mock&&<NativeRolePanel key={actor.id}/>}
-                <RolePermissions legacyOrganization={!workspace.ownerId} />
-                <div className="rbac-role-grid">
-                  {[
-                    {name:"Organization Owner",scope:"Own company",items:["Assigned automatically when you create your company after signup","Create and manage all units and organization members","Appoint Organization Admins and set their authorized units","Full access to every unit in the company"]},
-                    {
-                      name: "Organization Admin",
-                      scope: "Authorized units",
-                      items: [
-                        "Added by the Organization Owner with selected units",
-                        "Create units (auto-authorized for themselves)",
-                        "Invite and manage Unit Admins and Unit Members in authorized units",
-                        "Cannot change company settings or appoint Organization Admins",
-                      ],
-                    },
-                    {
-                      name: "Unit Admin",
-                      scope: "Assigned unit only",
-                      items: [
-                        "Invited or assigned by an Organization Admin",
-                        "Invite Unit Members to their unit",
-                        "Manage Unit Members within the unit",
-                        "Cannot appoint Unit Admins or Organization Admins",
-                      ],
-                    },
-                    {
-                      name: "Unit Member",
-                      scope: "Assigned unit only",
-                      items: [
-                        "Access only what Organization Admin permits",
-                        "No membership or role management",
-                        "Different roles can apply in different units",
-                        "No access to unassigned units",
-                      ],
-                    },
-                  ].map((role) => (
-                    <article className="rbac-panel" key={role.name}>
-                      <ShieldCheck size={27} />
-                      <h2>{role.name}</h2>
-                      <span className="badge purple">{role.scope}</span>
-                      <ul>
-                        {role.items.map((item) => (
-                          <li key={item}>
-                            <Check size={15} />
-                            {item}
-                          </li>
-                        ))}
-                      </ul>
-                    </article>
-                  ))}
-                </div>
-                {actor.superAdmin && (
-                  <p className="rbac-note">
-                    Application super-admin is a separate platform role with
-                    authority across organizations. Country membership alone
-                    grants no unit access.
-                  </p>
-                )}
-              </>
+              <div className="rbac-role-page">
+                <RoleOverview currentRole={actor.superAdmin?'Platform Super Admin':workspace.companyOwner?'Organization Owner':organizationAdmin?'Organization Admin':workspace.units.some(u=>u.role==='unit-admin')?'Unit Admin':workspace.units.length?'Unit Member':'Membership only'} />
+                {workspace.canEditRolePermissions && <WorkspacePermissionEditor
+                  key={orgId}
+                  base={base} revision={workspace.revision} policy={workspace.permissionPolicy}
+                  organizationManager={workspace.canConfigureCompanyPermissions}
+                  units={workspace.units.map(u=>({...u,canConfigure:organizationManager||u.role==='organization-admin'}))}
+                  onSaved={refresh}
+                />}
+                <RolePermissions legacyOrganization={!workspace.ownerId} policy={workspace.permissionPolicy} units={workspace.units} />
+                {actor.superAdmin&&!mock&&<div className="role-native-section"><NativeRolePanel key={actor.id}/></div>}
+                <p className="role-platform-note"><ShieldCheck size={16} aria-hidden="true"/>Platform Super Admin is a separate authority across organizations. Organization membership alone grants no unit access.</p>
+              </div>
             )}
             {view === "activity" && (
               <div className="rbac-panel table-wrap">
@@ -1685,8 +1641,8 @@ export default function RbacPortal() {
                           onChange={(e) => setAppointedRole(e.target.value)}
                         >
                           {dialog.kind==="invite"&&!dialog.unitId?<><option value="member">Organization member — no unit access</option><option value="organization-admin">Organization Admin</option></>:<>
-                          <option value="unit-user">Unit Member</option>
-                          {organizationAdmin && (
+                          {(dialog.unitId && workspace?.units.find(u=>u.id===dialog.unitId)?.permissions[dialog.kind==='invite'?'inviteMembers':'manageMembers'])&&<option value="unit-user">Unit Member</option>}
+                          {organizationAdmin && dialog.unitId && workspace?.units.find(u=>u.id===dialog.unitId)?.permissions[dialog.kind==='invite'?'inviteAdmins':'manageAdmins'] && (
                             <option value="unit-admin">Unit Admin</option>
                           )}
                           </>}

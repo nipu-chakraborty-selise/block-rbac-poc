@@ -1,3 +1,4 @@
+import {permissionKeys} from "./permissions";
 import {createCompanyOrganization} from './create-company';
 import { randomUUID } from "node:crypto";
 import {listNativeRoles,saveNativeRole} from './native-roles';
@@ -285,12 +286,13 @@ export async function rbacHandler(req: Request): Promise<Response> {
         role: role || "member",
         effectiveOrganizationRole: service.companyOwner()?"organization-owner":service.orgMember()?.role||"member",
         canManageOrganization: service.canManageOrganization(),
-        canCreateUnit: service.organizationAdmin(),
-        canManageUnit: !!unitId && service.canManageUnit(unitId),
-        canManageMembers: unitId ? role === "organization-admin" || role === "unit-admin" : service.canManageOrganization(),
+        canCreateUnit: service.can("createUnit"),
+        canManageUnit: !!unitId && (service.can("renameUnit",unitId) || service.can("changeUnitStatus",unitId)),
+        canManageMembers: unitId ? service.can("manageMembers",unitId) || service.can("manageAdmins",unitId) : service.canManageOrganization(),
         canUseUnit: !!unitId && !!role,
         canManageUnitContent:
-          !!unitId && (role === "organization-admin" || role === "unit-admin"),
+          !!unitId && service.can("manageContent",unitId),
+        permissions: unitId ? Object.fromEntries(permissionKeys.map(key => [key,service.can(key,unitId)])) : undefined,
       });
     }
     if (path[2] === "directory" && method === "GET") {
@@ -343,6 +345,8 @@ export async function rbacHandler(req: Request): Promise<Response> {
       service.dissolveOrganization();
       await ctx.repository.remove(org.id, saved);
       return json({ removed: true });
+    } else if (path[2] === "permissions" && path.length === 3 && method === "PATCH") {
+      service.updatePermissions(body);
     } else if (path[2] === "ownership" && method === "POST") {
       service.transferOwnership(String(body.userId || ""));
     } else if (path[2] === "settings" && method === "PATCH")
@@ -421,7 +425,7 @@ export async function rbacHandler(req: Request): Promise<Response> {
       if(organizationInvite){
         if(!service.canInviteOrganization())throw new AppError(403,"Only Super Admin or this company owner can invite organization members.");
         if(body.unitId)throw new AppError(422,"Organization invitations cannot specify a unit.");
-      }else service.requireUnitAdmin(String(body.unitId||""));
+      }else {service.requireUnitAdmin(String(body.unitId||""));service.requirePermission(body.role === "unit-admin" ? "inviteAdmins" : "inviteMembers",String(body.unitId||""));}
       const email=typeof body.email==="string"?body.email.trim().toLowerCase():"";
       if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)||email.length>254)
         throw new AppError(422,"Enter a valid email address.");

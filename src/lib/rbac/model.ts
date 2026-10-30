@@ -38,6 +38,7 @@ export interface Invitation {
   acceptedBy?: string;
 }
 export interface OrganizationState {
+  permissionPolicy?: import('./permissions').WorkspacePermissionPolicy;
   version: 1;
   organizationId: string;
   ownerId?: string;
